@@ -44,6 +44,7 @@ q3(enUsNews) # [1] 5760
 
 ##
 ## Q4
+## grepl reference http://www.regular-expressions.info/rlanguage.html
 ##
 q4 <- function(data) {
   numOfLove <- 0
@@ -72,4 +73,4 @@ enUsTwitter[grep("biostats", enUsTwitter)]\
 ##
 ## Q6
 ##
-grep("A computer once beat me at chess, but it was no match for me at kickboxing", enUsTwitter)
+length(grep("A computer once beat me at chess, but it was no match for me at kickboxing", enUsTwitter))
