@@ -1,3 +1,9 @@
+### 2016.03.15
+
+1. Create a generic function that performs data reduction.
+	* Read file
+	* If `decide` is true then accumulate else skip
+
 ### 2016.03.11
 
 1. [faster for() loops in R](http://www.r-bloggers.com/faster-for-loops-in-r/)
