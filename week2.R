@@ -15,15 +15,11 @@ makeFqnOutputFilePath <- function(locale, context) {
   fqnOutputFileName
 }
 
-makeReducedData <- function(fileName) {
-  decide <- rbinom(1, 1, 0.5) # half the file
-  contents <- readLines(fileName)
-  newContents <- c()
-  for (line in contents) {
-    if (decide == TRUE) {
-      newContents <- c(newContents, line)
-    }
-  }
+makeReducedData <- function(fileName, factor = 0.1) {
+  connection <- file(fileName, "rb") # read as binary
+  contents <- readLines(connection)
+  newContents <- sample(contents, length(contents) * factor)
+  on.exit(close(connection))
   newContents
 }
 
@@ -32,18 +28,24 @@ writeDataToFile <- function(fileName, data) {
   print(fileName)
 }
 
-for (locale in locales) {
-  for (context in contexts) {
-    fileName <- paste(locale, context, fileExt, sep = fileNameSep)
-    fullQualifiedFileName <- paste(dataDirectory, locale, fileName, sep = filePathSep)
-    if (file.exists(fullQualifiedFileName) == TRUE) {
-      # print(fullQualifiedFileName) 
-      # print(makeFqnOutputFilePath(locale, context))
-      writeDataToFile(
-        makeFqnOutputFilePath(locale, context), 
-        makeReducedData(fullQualifiedFileName))
-    } else {
-      stop("File not found!") 
+main <- function() {
+  for (locale in locales) {
+    for (context in contexts) {
+      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
+      fullQualifiedFileName <- paste(finalDirectory, locale, fileName, sep = filePathSep)
+      if (file.exists(fullQualifiedFileName) == TRUE) {
+        # print(fullQualifiedFileName) 
+        # print(makeFqnOutputFilePath(locale, context))
+        writeDataToFile(
+          makeFqnOutputFilePath(locale, context), 
+          makeReducedData(fullQualifiedFileName))
+        break
+      } else {
+        stop("File not found!") 
+      }
     }
   }
 }
+
+system.time(
+  main())
