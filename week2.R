@@ -16,19 +16,19 @@ makeFqnOutputFilePath <- function(locale, context) {
 }
 
 makeReducedData <- function(fileName, factor = 0.1) {
-  connection <- file(fileName, "rb") # read as binary
-  contents <- readLines(connection)
+  connection <- file(fileName, "rb")
+  contents <- readLines(connection, encoding = "UTF-8")
   newContents <- sample(contents, length(contents) * factor)
   on.exit(close(connection))
   newContents
 }
 
-writeDataToFile <- function(fileName, data) {
+writeDataToFile <- function(fileName, data, printFileName = FALSE) {
   write(data, file = fileName) # over write file
-  print(fileName)
+  if(printFileName == TRUE) print(fileName)
 }
 
-main <- function() {
+makeSampleFiles <- function() {
   for (locale in locales) {
     for (context in contexts) {
       fileName <- paste(locale, context, fileExt, sep = fileNameSep)
@@ -39,7 +39,6 @@ main <- function() {
         writeDataToFile(
           makeFqnOutputFilePath(locale, context), 
           makeReducedData(fullQualifiedFileName))
-        break
       } else {
         stop("File not found!") 
       }
@@ -48,4 +47,24 @@ main <- function() {
 }
 
 system.time(
-  main())
+  makeSampleFiles())
+
+library(tm)
+enUsTwitterFileName <- paste(locales[2], contexts[3], fileExt, sep = fileNameSep)
+enUsOutputDirectory <- paste(outputDirectory, locales[2], sep = filePathSep)
+enUsTwitterFqPath <- paste(enUsOutputDirectory, enUsTwitterFileName, sep = filePathSep)
+
+tryRun <- function() {
+  dirSource <- DirSource(directory = enUsOutputDirectory, encoding = "UTF-8")
+  ovid <- VCorpus(dirSource, readerControl = list(language = "eng"))
+  on.exit(close(dirSource))
+  ovid
+}
+system.time(
+  tryRun()) 
+# user  system elapsed 
+# 6.64    0.02    6.66
+
+ovid <- tryRun()
+class(ovid) # [1] "VCorpus" "Corpus"
+inspect(ovid)

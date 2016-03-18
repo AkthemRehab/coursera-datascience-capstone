@@ -1,3 +1,7 @@
+### 2016.03.19
+1. [ISO 639-2 Language Codes](https://www.loc.gov/standards/iso639-2/php/code_list.php)
+2. ??? 
+
 ### 2016.03.15
 
 1. Create a generic function that performs data reduction.
@@ -12,7 +16,7 @@
 	* Make assumption that only the body texts are important
 	* [https://www.youtube.com/watch?v=s3kKlUBa3b0](https://www.youtube.com/watch?v=s3kKlUBa3b0) from [https://www.coursera.org/learn/data-science-project/module/OkCmA/discussions/q_INCeZ_EeWohBKTpGZ3Aw](https://www.coursera.org/learn/data-science-project/module/OkCmA/discussions/q_INCeZ_EeWohBKTpGZ3Aw)
 	* [R example for sampling](https://www.coursera.org/learn/data-science-project/module/mb9DN/discussions/CgJEA-nTEeWfwAohgaM63Q)
-	* [Suggested "tm" package reference](https://cran.r-project.org/web/packages/tm/vignettes/tm.pdf)
+	* [Introduction to the "tm" Package](https://cran.r-project.org/web/packages/tm/vignettes/tm.pdf)
 3. What is n-gram?
 	* [https://www.coursera.org/learn/data-science-project/module/mb9DN/discussions/aFSPjunbEeWcTQpIg9bO1w](https://www.coursera.org/learn/data-science-project/module/mb9DN/discussions/aFSPjunbEeWcTQpIg9bO1w)
 	* E.g. A single word is unigram, a pair is 2-gram
