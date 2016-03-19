@@ -1,6 +1,12 @@
 ### 2016.03.19
 1. [ISO 639-2 Language Codes](https://www.loc.gov/standards/iso639-2/php/code_list.php)
-2. ??? 
+2. The function `tm_map` may have issue with "Snowballc' package - Resolution is to install it manually with `install.packages`. Refer [here](https://support.rstudio.com/hc/en-us/community/posts/200652293-Snowball-Stemmer-is-not-working-in-R-Studio).
+3. [Sample code for transformation](http://stackoverflow.com/questions/25330753/more-efficient-means-of-creating-a-corpus-and-dtm). The sequence of transformation would affect the end results, say `stemDocument` comes before `removePunctuation`
+4. [Stemming](https://en.wikipedia.org/wiki/Word_stem) removes affixes from words(E.g "run", "runs", "running" become "run")
+5. [Text Mining The Complete Works of William Shakespeare](http://www.r-bloggers.com/text-mining-the-complete-works-of-william-shakespeare/).
+6. [Stop Words](http://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html) are extremely common words that has little value in text mining activity.
+7. `TermDocumentMatrix` can be transposed into `DocumentTermMatrix`. Each convenience depends on the number of documents and terms in the data.
+8. [Basic Text Mining in R](https://rstudio-pubs-static.s3.amazonaws.com/31867_8236987cf0a8444e962ccd2aec46d9c3.html); Very good reference too.
 
 ### 2016.03.15
 
@@ -9,11 +15,9 @@
 	* Within for-loop; If `decide` is true then accumulate else skip
 	* Very bad performance
 2. How to read large text file efficiently ?
-	* CLT
-	* Take note of special character "SUB" - One resolution is to read the file as binary
-	* Determine the number of lines needed ?
-	* Load the data into Corpus, using `VCorpus` function from "tm" package (look up more into this package)
-	* Make assumption that only the body texts are important
+	* CLT - Sample only 1% data
+	* Take note of special character "SUB" - Read file as binary
+	* Make assumption that only the body texts are important - Corpus object hold a number of text documents
 	* [https://www.youtube.com/watch?v=s3kKlUBa3b0](https://www.youtube.com/watch?v=s3kKlUBa3b0) from [https://www.coursera.org/learn/data-science-project/module/OkCmA/discussions/q_INCeZ_EeWohBKTpGZ3Aw](https://www.coursera.org/learn/data-science-project/module/OkCmA/discussions/q_INCeZ_EeWohBKTpGZ3Aw)
 	* [R example for sampling](https://www.coursera.org/learn/data-science-project/module/mb9DN/discussions/CgJEA-nTEeWfwAohgaM63Q)
 	* [Introduction to the "tm" Package](https://cran.r-project.org/web/packages/tm/vignettes/tm.pdf)
