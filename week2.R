@@ -1,3 +1,12 @@
+library(slam)
+library(reshape2)
+library(tm)
+library(ggplot2)
+library(wordcloud)
+library(RWeka)
+
+set.seed(55669)
+
 filePathSep <- "\\"
 fileNameSep <- "."
 swiftKeyDirectory <- ".\\data\\Coursera-SwiftKey"
@@ -16,7 +25,7 @@ makeFqnOutputFilePath <- function(locale, context) {
   fqnOutputFileName
 }
 
-makeReducedData <- function(fileName, factor = 0.7) {
+makeReducedData <- function(fileName, factor = 0.01) {
   connection <- file(fileName, "rb")
   contents <- readLines(connection, encoding = "UTF-8", skipNul = TRUE)
   newContents <- sample(contents, length(contents) * factor)
@@ -35,8 +44,6 @@ makeSampleFiles <- function() {
       fileName <- paste(locale, context, fileExt, sep = fileNameSep)
       fullQualifiedFileName <- paste(finalDirectory, locale, fileName, sep = filePathSep)
       if (file.exists(fullQualifiedFileName) == TRUE) {
-        # print(fullQualifiedFileName) 
-        # print(makeFqnOutputFilePath(locale, context))
         writeDataToFile(
           makeFqnOutputFilePath(locale, context), 
           makeReducedData(fullQualifiedFileName))
@@ -47,10 +54,14 @@ makeSampleFiles <- function() {
   }
 }
 
-system.time(
-  makeSampleFiles())
+######################################################
+## Produce sample file with 1% worth of orginal data
+######################################################
+makeSampleFiles()
 
-library(tm)
+######################################################
+## Construct Corpus object based on directory source
+######################################################
 enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
 
 makeCorpus <- function(d) {
@@ -62,6 +73,9 @@ makeCorpus <- function(d) {
 
 ovid <- makeCorpus(enUsOutputDirectory)
 
+#########################################################
+## Cleaning the text documents within the Corpus object
+########################################################
 transformCorpus <- function(corpus) {
   corpus <- tm_map(corpus, tolower)
   corpus <- tm_map(corpus, removePunctuation)
@@ -83,52 +97,80 @@ tagDocumentWithId <- function(corpus) {
 
 ovid <- tagDocumentWithId(ovid)
 
+###################################################################
+## Construct DocumentTermMatrix and vice versa from Corpus object 
+###################################################################
 Sys.time()
 documentTermMatrix <- DocumentTermMatrix(ovid) # This will take a while
-Sys.time() # Approx 12 minutes; After more transformations, approx 8 minutes
+Sys.time()
 
-# class(documentTermMatrix) [1] "DocumentTermMatrix"    "simple_triplet_matrix"
+#########################################################
+## Remove sparse data
+########################################################
 termDocumentMatrix <- as.TermDocumentMatrix(documentTermMatrix)
 termDocumentMatrix2 <- removeSparseTerms(termDocumentMatrix, 0.1) # Important !!!
 
-library(slam)
-library(reshape2)
-
+#########################################################
+## Word Cloud Analysis
+########################################################
 termDocumentMatrix3 <- as.matrix(termDocumentMatrix2)
 termDocumentMatrix4 <- melt(termDocumentMatrix3, value.name = "Count")
-# names(termDocumentMatrix4) # [1] "Terms" "Docs"  "Count"
-termDocumentMatrix5 <- termDocumentMatrix4[order(termDocumentMatrix4$Count, decreasing = TRUE), ]
-head(termDocumentMatrix5, 100)
+termDocumentMatrix5 <- aggregate(Count ~ Terms, data = termDocumentMatrix4, sum)
+termDocumentMatrix6 <- termDocumentMatrix5[order(termDocumentMatrix5$Count, decreasing = TRUE), ]
+termDocumentMatrix6$Terms <- as.character(termDocumentMatrix6$Terms)
 
-library(ggplot2)
-top20 <- c(1: 20)
-plot1 <- ggplot(termDocumentMatrix5[, top20], aes(Terms, Count))
-plot1 <- plot1 + geom_bar(stat = "identity")
-plot1
+wordcloud(termDocumentMatrix6$Terms, termDocumentMatrix6$Count, 
+          random.order = FALSE, rot.per = 0.35,
+          max.words = 150, colors = brewer.pal(6, "Dark2"))
 
-termDocumentMatrix6 <- termDocumentMatrix5[termDocumentMatrix5$count > 7000, ]
-associations <- findAssocs(termDocumentMatrix2, as.character(termDocumentMatrix6$Terms), 1.00)
-# class(associations) # [1] "list"
-termDocumentMatrix6$Terms[1]
-associations[[as.character(termDocumentMatrix6$Terms[1])]]
+#########################################################
+## N Gram Analysis
+########################################################
 
-library(wordcloud)
-set.seed(1000)
-plot2 <- ""
-wordcloud(termDocumentMatrix5$Terms, termDocumentMatrix5$count, 
-          max.words = 100, colors = brewer.pal(6, "Dark2"))
+gramTokenizer <- function(n) {
+  NGramTokenizer(ovid, Weka_control(min = n, max = n, delimiters = " \\r\\n\\t.,;:\"()?!"))
+}
 
-# library(cluster)
-# termDocumentMatrix6 <- termDocumentMatrix5[termDocumentMatrix5$count > 7000, ]
-# termDocumentMatrix6
-# complete.cases(termDocumentMatrix6)
-# d <- dist(as.matrix(termDocumentMatrix6))
+oneGram <- gramTokenizer(1)
+biGram <- gramTokenizer(2)
+triGram <- gramTokenizer(3)
 
-# plot3 <- ggplot(termDocumentMatrix5, aes(x = Docs, y = Terms, fill = log10(count)))
-# plot3 <- plot3 + geom_title(color = "white")
-# plot3 <- plot3 + scale_fill_gradient(high = "#FF0000", low = "#FFFFFF")
-# plot3
+oneGramDf <- data.frame(table(oneGram))
+biGramDf <- data.frame(table(biGram))
+triGramDf <- data.frame(table(triGram))
 
-library(rJava)
-library(RWeka)
-oneGram <- NGramTokenizer(ovid, Weka_control(min = 1, max = 1, delimiters = " \\r\\n\\t.,;:\"()?!")))
+sanitizeGramDf <- function(df) {
+  newDf <- data.frame(Term = as.character(df[, 1]), Count = df[, 2])
+  newDf
+}
+
+oneGramDf <- sanitizeGramDf(oneGramDf)
+biGramDf <- sanitizeGramDf(biGramDf)
+triGramDf <- sanitizeGramDf(triGramDf)
+
+sortGramDf <- function(df) {
+  df[order(df$Count, decreasing = TRUE), ]
+}
+
+oneGramDf <- sortGramDf(oneGramDf)
+biGramDf <- sortGramDf(biGramDf)
+triGramDf <- sortGramDf(triGramDf)
+
+reductionRows <- c(1: 30)
+oneGramDfReduced <- oneGramDf[reductionRows, ]
+biGramDfReduced <- biGramDf[reductionRows, ]
+triGramDfReduced <- triGramDf[reductionRows, ]
+
+plotNgram <- function(df, titleLabel, xLabel, yLabel) {
+  plot1 <- ggplot(df, aes(x = reorder(Term, -Count), y = Count))
+  plot1 <- plot1 + geom_bar(stat = "identity")
+  plot1 <- plot1 + ggtitle(titleLabel)
+  plot1 <- plot1 + labs(x = xLabel, y = yLabel)
+  plot1 <- plot1 + theme(axis.text.x = element_text(angle = 45, size = 14, hjust = 1), 
+                         plot.title = element_text(size = 20, face = "bold"))
+  plot1
+}
+
+plotNgram(oneGramDfReduced, "Top 30 1-Gram", "1-Gram", "Count of 1-Gram")
+plotNgram(biGramDfReduced, "Top 30 2-Grams", "2-Grams", "Count of 2-Grams")
+plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
