@@ -12,10 +12,30 @@ fileNameSep <- "."
 swiftKeyDirectory <- ".\\data\\Coursera-SwiftKey"
 finalDirectory <- paste(swiftKeyDirectory, "final", sep = filePathSep)
 outputDirectory <- paste(swiftKeyDirectory, "output", sep = filePathSep) 
-locales <- c("de_DE", "en_US", "fi_FI", "ru_RU")
-locales <- locales[2]
+localesAvail <- c("de_DE", "en_US", "fi_FI", "ru_RU")
+locales <- localesAvail[2]
 contexts <- c("blogs", "news", "twitter")
 fileExt <- "txt"
+
+getFileInfo <- function(directory) {
+  df <- data.frame(name = c(), size = c())
+  for (locale in locales) {
+    for (context in contexts) {
+      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
+      fullQualifiedFileName <- paste(directory, locale, fileName, sep = filePathSep)
+      if (file.exists(fullQualifiedFileName) == TRUE) {
+        fInfo <- file.info(fullQualifiedFileName)
+        fileSizeInMb <- paste(round(fInfo$size / 1024 / 1024, 2), "MB")
+        df <- rbind(df, data.frame(name = fileName, size = fileSizeInMb))
+      } else {
+        stop("File not found!") 
+      }
+    }
+  }
+  df
+}
+
+getFileInfo(finalDirectory)
 
 makeFqnOutputFilePath <- function(locale, context) {
   localeDirectory <- paste(outputDirectory, locale, sep = filePathSep)
@@ -84,6 +104,7 @@ transformCorpus <- function(corpus) {
   corpus <- tm_map(corpus, stemDocument)
   corpus <- tm_map(corpus, stripWhitespace)
   corpus <- tm_map(corpus, PlainTextDocument)
+  corpus
 }
 
 ovid <- transformCorpus(ovid)
