@@ -1,5 +1,5 @@
 ---
-title: "Data Science Capstone Milestone Report - Datasets Exploratory Analysis for Natural Language Processing"
+title: "Data Science Capstone Milestone Report - Datasets Exploratory Analysis for Predictive Text Modelling"
 author: "YeongWei"
 date: "Sunday, March 20, 2016"
 output: html_document
@@ -39,7 +39,7 @@ fileExt <- "txt"
 
 # Procedure
 
-This section consist of information related to getting and cleaning the datasets followed by procedures taken to represent the datasets as useful R Objects.
+This section consist of information related to getting and cleaning the datasets followed by procedures taken to represent the datasets as `Corpus` R Objects.
 
 ## Getting the Data
 ```{r}
@@ -62,7 +62,7 @@ getFileInfo <- function(directory) {
 }
 ```
 
-1. The datasets consist of 4 locales and for the purpose of this report, only the datasets under `en_US`were considered.
+1. The datasets consist of 4 locales and for the purpose of this report, only the datasets under `en_US` were considered.
 2. Below shows the individual file size under `en_US` folder.
 ```{r showFileInfo, results = "markup"}
 getFileInfo(finalDirectory)
@@ -121,7 +121,7 @@ getFileInfo(outputDirectory)
 
 This section describes the creation of `Corpus` in R as a representation of multiple text documents and the procedures taken to preprocess it.
 
-1. Built `Corpus` as R Object with text documents described in [the Sample the Data section](#sample-the-data).
+1. Built `Corpus` using R Package "tm" with text documents described in [the Sample the Data section](#sample-the-data).
 ```{r constructCorpus}
 enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
 
@@ -138,7 +138,7 @@ ovid <- makeCorpus(enUsOutputDirectory)
 ```{r results = "markup"}
 ovid
 ```
-2. Applied `Transformation` onto `Corpus` Object.
+2. Applied `Transformation` onto `Corpus` Object. The objective is to reduce noise in the texts.
     + Make all text to lower case.
     + Remove all punctuations.
     + Remove all numbers.
@@ -169,7 +169,7 @@ tagDocumentWithId <- function(corpus) {
 
 ovid <- tagDocumentWithId(ovid)
 ```
-3. Built `TermDocumentMatrix` for evaluation of Term frequency by text documents.
+3. Built `TermDocumentMatrix` for evaluation of Term frequency by text document.
 ```{r buildTermDocumentMatrix}
 documentTermMatrix <- DocumentTermMatrix(ovid)
 termDocumentMatrix <- as.TermDocumentMatrix(documentTermMatrix)
@@ -178,7 +178,7 @@ termDocumentMatrix <- as.TermDocumentMatrix(documentTermMatrix)
 ```{r results = "markup"}
 termDocumentMatrix
 ```
-4. Reduce sparsity from `TermDocumentMatrix`. This is removing thinly dispersed or scattered texts.
+4. Reduce sparsity from `TermDocumentMatrix`. The objective is to remove thinly dispersed or scattered texts.
 ```{r removeSparsity}
 termDocumentMatrix2 <- removeSparseTerms(termDocumentMatrix, 0.1)
 ```
@@ -193,7 +193,7 @@ The section attempts to present the exploratory analysis based on the `Corpus` c
 
 ## Word Cloud
 
-A visual representation of 150 words that appears in the `Corpus` as brief linguistic context.
+A visual representation of 170 words that appears in the `Corpus` as brief linguistic context.
 ```{r createWordCloud}
 termDocumentMatrix3 <- as.matrix(termDocumentMatrix2)
 termDocumentMatrix4 <- melt(termDocumentMatrix3, value.name = "Count")
@@ -207,7 +207,7 @@ wordcloud(termDocumentMatrix6$Terms, termDocumentMatrix6$Count,
 ```
 
 ## N-Gram(s)
-N-Gram represents sequence of "n" number of text items(E.g. phonemes, syllables, letters, words, base pairs and etc). This section attempts to explore the 1-Gram, 2-Grams and 3-Grams of the created `Corpus`.
+N-Gram represents sequence of "n" number of text items(E.g. phonemes, syllables, letters, words, base pairs and etc). This section attempts to explore the counts of 1-Gram, 2-Grams and 3-Grams of the created `Corpus`.
 ```{r createNgrams}
 gramTokenizer <- function(n) {
   NGramTokenizer(ovid, Weka_control(min = n, max = n, delimiters = " \\r\\n\\t.,;:\"()?!"))
@@ -273,17 +273,17 @@ plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
 
 # Summary
 1. From [Getting the Data section](#getting-the-Data). It was observed that the file size for Blogs and News were bigger than Twitter. This could be caused by tweets usually have shorter text length.
-2. From [Word Cloud](#word-cloud). It was observed that there was not a determinable linguistic context (E.g. Scientific, Entertainment, Politics or etc ). Therefore it was assumed that the `Corpus` consist of a wide range of context.
-3. From [N-Gram(s) section]. The Top 30 [1-Gram](#1-gram) and 2-Grams[#2-grams] appeared to have more reasonable linguistic context. 
+2. From [Word Cloud](#word-cloud). It was observed that there was not a determinable linguistic context (E.g. Scientific, Entertainment, Politics or etc ). Therefore it was assumed that the `Corpus` consist of a wide range of context(lose linguistic context).
+3. From [N-Gram(s) section](#n-grams). The Top 30 [1-Gram](#1-gram) and [2-Grams](#2-grams) appeared to have more reasonable linguistic context. 
 4. However the [3-Grams](#3-grams) consisted word-combinations that did not have reasonable context. As examples,
     + "x x x"
     + "gov chris christie"
-5. The [3-Grams](#3-grams) consisted words that were non English/ As example,
+5. The [3-Grams](#3-grams) consisted words that were Non-English. As example,
     + "cinco de mayo"
  
 # Future Work / Recommendation
 1. Use bigger size of sample data, possible 3% - 5%; If hardware resources permitted.
-2. Apply stricter text clearning process before building `Corpus`.
+2. Apply stricter text clearning process before building `Corpus`. (E.g. Remove slangs, Remove Non-English texts)
 3. Perform higher N-Gram(s) analysis to understand better lingustic context of the datasets.
 4. Explore various NLP modelling techniques and bulding Model based on existing data above.
 
