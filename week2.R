@@ -155,10 +155,12 @@ gramTokenizer <- function(n) {
 oneGram <- gramTokenizer(1)
 biGram <- gramTokenizer(2)
 triGram <- gramTokenizer(3)
+fourGram <- gramTokenizer(4)
 
 oneGramDf <- data.frame(table(oneGram))
 biGramDf <- data.frame(table(biGram))
 triGramDf <- data.frame(table(triGram))
+fourGramDf <- data.frame(table(fourGram))
 
 sanitizeGramDf <- function(df) {
   newDf <- data.frame(Term = as.character(df[, 1]), Count = df[, 2])
@@ -168,6 +170,7 @@ sanitizeGramDf <- function(df) {
 oneGramDf <- sanitizeGramDf(oneGramDf)
 biGramDf <- sanitizeGramDf(biGramDf)
 triGramDf <- sanitizeGramDf(triGramDf)
+fourGramDf <- sanitizeGramDf(fourGramDf)
 
 sortGramDf <- function(df) {
   df[order(df$Count, decreasing = TRUE), ]
@@ -176,6 +179,7 @@ sortGramDf <- function(df) {
 oneGramDf <- sortGramDf(oneGramDf)
 biGramDf <- sortGramDf(biGramDf)
 triGramDf <- sortGramDf(triGramDf)
+fourGramDf <- sortGramDf(fourGramDf)
 
 reductionRows <- c(1: 30)
 oneGramDfReduced <- oneGramDf[reductionRows, ]
@@ -195,3 +199,8 @@ plotNgram <- function(df, titleLabel, xLabel, yLabel) {
 plotNgram(oneGramDfReduced, "Top 30 1-Gram", "1-Gram", "Count of 1-Gram")
 plotNgram(biGramDfReduced, "Top 30 2-Grams", "2-Grams", "Count of 2-Grams")
 plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
+
+#########################################################
+## Building predictive model
+########################################################
+class(fourGramDf)
