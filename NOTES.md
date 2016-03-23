@@ -1,3 +1,12 @@
+### 2016.03.23
+
+1. [Guide to the N Gram Package](https://cran.r-project.org/web/packages/ngram/vignettes/ngram-guide.pdf)
+2. [Package 'ngram'](https://cran.r-project.org/web/packages/ngram/ngram.pdf)
+3. [Predictive Modeling with R and the caret Package](https://www.r-project.org/nosvn/conferences/useR-2013/Tutorials/kuhn/user_caret_2up.pdf)
+4. Worth the read, potentially student's work. [http://rstudio-pubs-static.s3.amazonaws.com/39014_76f8487a8fb84ed7849e96846847c295.html](http://rstudio-pubs-static.s3.amazonaws.com/39014_76f8487a8fb84ed7849e96846847c295.html).
+5. [Ray Jones response](https://www.coursera.org/learn/data-science-project/discussions/q_INCeZ_EeWohBKTpGZ3Aw/replies/GDGSMefKEeWPKQpBKpg03Q).
+6. [Next word prediction benchmark](https://github.com/hfoffani/dsci-benchmark).
+
 ### 2016.03.19
 1. [ISO 639-2 Language Codes](https://www.loc.gov/standards/iso639-2/php/code_list.php)
 2. The function `tm_map` may have issue with "Snowballc' package - Resolution is to install it manually with `install.packages`. Refer [here](https://support.rstudio.com/hc/en-us/community/posts/200652293-Snowball-Stemmer-is-not-working-in-R-Studio).

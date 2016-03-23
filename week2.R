@@ -164,6 +164,7 @@ fourGramDf <- data.frame(table(fourGram))
 
 sanitizeGramDf <- function(df) {
   newDf <- data.frame(Term = as.character(df[, 1]), Count = df[, 2])
+  newDf$Term <- as.character(newDf$Term)
   newDf
 }
 
@@ -203,4 +204,71 @@ plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
 #########################################################
 ## Building predictive model
 ########################################################
-class(fourGramDf)
+# class(fourGramDf) # [1] "data.frame"
+# names(fourGramDf) # [1] "Term"  "Count"
+# head(fourGramDf)
+
+##
+## Use pattern match to get desired rows out of data.frame
+##
+filteredGrams <- fourGramDf[grep("^thanks for the", fourGramDf$Term, perl = TRUE), ][1:3, c("Term")]
+
+## 
+## Get last word out of a string
+##
+getLastWord <- function (txt, seperator = " ") {
+  txtElems <- strsplit(txt, seperator)[[1]]
+  txtElems[length(txtElems)]
+}
+
+## 
+## Get last word out of a vector of strings
+##
+getLastWords <- function(txts) {
+  numOfTxt <- length(txts)
+  lastWords <- vector(length = numOfTxt)
+  for(i in c(1:numOfTxt)) {
+    lastWords[i] <- getLastWord(txts[i])
+  }
+  lastWords
+}
+
+# Test
+getLastWord(filteredGrams[1])
+getLastWords(filteredGrams)
+
+##
+## Get number of words from the end of string
+##
+getEndingWords <- function (txt, seperator = " ") {
+  txtToLower <- tolower(txt)
+  txtElems <- strsplit(txtToLower, seperator)[[1]]
+  lengthOfTxt <- length(txtElems)
+  lowerBound <- 0
+  upperBound <- lengthOfTxt
+  offset <- 1 ## sequence indexing starts from 1
+  if (lengthOfTxt == 0) {
+    lowerBound <- upperBound
+  } else if (lengthOfTxt == 1) {
+    lowerBound <- 1
+  } else if (lengthOfTxt == 2) {
+    lowerBound <- 1
+  } else {
+    lowerBound <- lengthOfTxt - 3 + offset
+  }
+  paste(txtElems[lowerBound:upperBound], collapse = " ")
+}
+
+sampleTxts <- c("",
+                "Hello", 
+                "Hello there",
+                "thanks for the",
+                "and thanks for the"
+                "Hello there has been a long time and thanks for the")
+
+for (txt in sampleTxts) {
+  # print(sampleText)
+  print(getEndingWords(txt))
+}
+
+
