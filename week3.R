@@ -79,19 +79,43 @@ makeSampleFiles <- function() {
 ######################################################
 makeSampleFiles()
 
-######################################################
-## Construct Corpus object based on directory source
-######################################################
-enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
+##
+## Get texts from a vector of files
+##
+getTexts <- function(files) {
+  allTexts <- c()
+  for (file in files) {
+    allTexts <- c(allTexts, readLines(file))
+  }
+  allTexts
+}
 
-makeCorpus <- function(d) {
-  dirSource <- DirSource(directory = d, encoding = "UTF-8")
-  ovid <- VCorpus(dirSource, readerControl = list(language = "eng"))
-  on.exit(close(dirSource))
+makeFilePaths <- function() {
+  filePaths <- c()
+  for (locale in locales) {
+    for (context in contexts) {
+      outputPath <- paste(outputDirectory, locale, sep = filePathSep)
+      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
+      filePaths <- c(filePaths, paste(outputPath, fileName, sep = filePathSep))
+    }
+  }
+  filePaths
+}
+
+# Test
+makeFilePaths()
+head(getTexts(makeFilePaths()))
+
+######################################################
+## Construct Corpus object based on vector source
+######################################################
+makeCorpus <- function(txts) {
+  vectorSource <- VectorSource(txts)
+  ovid <- Corpus(vectorSource)
   ovid
 }
 
-ovid <- makeCorpus(enUsOutputDirectory)
+ovid <- makeCorpus(getTexts(makeFilePaths()))
 
 #########################################################
 ## Cleaning the text documents within the Corpus object
@@ -101,7 +125,7 @@ transformCorpus <- function(corpus) {
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, removeNumbers)
   # corpus <- tm_map(corpus, removeWords, stopwords("english"))
-  corpus <- tm_map(corpus, stemDocument)
+  # corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
   corpus <- tm_map(corpus, stripWhitespace)
   corpus <- tm_map(corpus, PlainTextDocument)
   corpus
