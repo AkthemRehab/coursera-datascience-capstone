@@ -1,3 +1,6 @@
+### 2016.03.24
+1. [Natural Language Processing](https://rpubs.com/lmullen/nlp-chapter)
+
 ### 2016.03.23
 
 1. [Guide to the N Gram Package](https://cran.r-project.org/web/packages/ngram/vignettes/ngram-guide.pdf)
