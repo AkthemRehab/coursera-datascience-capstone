@@ -208,11 +208,6 @@ plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
 # names(fourGramDf) # [1] "Term"  "Count"
 # head(fourGramDf)
 
-##
-## Use pattern match to get desired rows out of data.frame
-##
-filteredGrams <- fourGramDf[grep("^thanks for the", fourGramDf$Term, perl = TRUE), ][1:3, c("Term")]
-
 ## 
 ## Get last word out of a string
 ##
@@ -259,6 +254,7 @@ getEndingWords <- function (txt, seperator = " ") {
   paste(txtElems[lowerBound:upperBound], collapse = " ")
 }
 
+# Test
 sampleTxts <- c("",
                 "Hello", 
                 "Hello there",
@@ -269,6 +265,39 @@ sampleTxts <- c("",
 for (txt in sampleTxts) {
   # print(sampleText)
   print(getEndingWords(txt))
+}
+
+##
+## Match search text with entries in N Gram data.frame
+##
+filterNgrams <- function(nGramDf, searchTxt) {
+  # Will perl = TRUE incure performance issue ???
+  nGramDf[grep(paste("^", searchTxt, sep = ""), nGramDf$Term, perl = TRUE), ][1:3, c("Term")]
+}
+
+##
+## Returns the appropriate N Gram DF depending on n argument
+##
+getNGramDf <- function(n) {
+  # exists("fourGramDf")
+  if (n == 1) {
+    
+  } else if (n == 2) {
+    
+  } else if (n == 3) {
+    
+  } else if (n == 4) {
+    
+  } else {
+    stop("N Gram does not exist!")
+  }
+}
+
+##
+## Given a text string as input, predict the 3 following possible words
+##
+getNextWordsSuggestion <- function(inputTxt) {
+  
 }
 
 
