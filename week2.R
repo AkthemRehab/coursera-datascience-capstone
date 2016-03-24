@@ -268,6 +268,63 @@ for (txt in sampleTxts) {
 }
 
 ##
+## Get the N based on string length
+##
+getN <- function(txt, seperator = " ") {
+  txtLength <- length(strsplit(txt, seperator)[[1]])
+  if (txtLength == 0) {
+    1
+  } else if (txtLength == 1) {
+    2
+  } else if (txtLength == 2) {
+    3
+  } else {
+    4
+  }
+}
+
+##
+## Return the "standard" N Gram Data Fram name
+##
+getNGramDfName <- function(n) {
+  if (n == 1) {
+    "oneGramDf"
+  } else if (n == 2) {
+    "biGramDf"
+  } else if (n == 3) {
+    "triGramDf"
+  } else if (n == 4) {
+    "fourGramDf"
+  } else {
+    stop("N Gram does not exist!")
+  }
+}
+
+##
+##
+##
+isValidNgramDfName <- function(nGramDfName) {
+    exists(nGramDfName)
+}
+
+##
+## Returns the appropriate N Gram DF depending on n argument
+##
+getNGramDf <- function(n) {
+  nGramDfName <- getNGramDfName(n)
+  if (isValidNgramDfName(nGramDfName)) {
+    get(nGramDfName)
+  } else {
+    stop("N Gram does not exist!")
+  }
+}
+
+# Test
+getNGramDfName(1)
+isValidNgramDfName(getNGramDfName(1))
+class(getNGramDf(1))
+
+##
 ## Match search text with entries in N Gram data.frame
 ##
 filterNgrams <- function(nGramDf, searchTxt) {
@@ -276,28 +333,16 @@ filterNgrams <- function(nGramDf, searchTxt) {
 }
 
 ##
-## Returns the appropriate N Gram DF depending on n argument
-##
-getNGramDf <- function(n) {
-  # exists("fourGramDf")
-  if (n == 1) {
-    
-  } else if (n == 2) {
-    
-  } else if (n == 3) {
-    
-  } else if (n == 4) {
-    
-  } else {
-    stop("N Gram does not exist!")
-  }
-}
-
-##
 ## Given a text string as input, predict the 3 following possible words
 ##
 getNextWordsSuggestion <- function(inputTxt) {
-  
+  N <- getN(inputTxt)
+  nGramDf <- getNGramDf(N)
+  endingWords <- getEndingWords(inputTxt)
+  filteredNgrams <- filterNgrams(nGramDf, endingWords)
+  getLastWords(filteredNgrams)
 }
+
+getNextWordsSuggestion("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
 
 
