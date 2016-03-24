@@ -133,14 +133,17 @@ transformCorpus <- function(corpus) {
 
 ovid <- transformCorpus(ovid)
 
-tagDocumentWithId <- function(corpus) {
-  for(i in c(1 : length(corpus))) {
-    DublinCore(corpus[[i]], "id") <- i
-  }
-  corpus
-}
-
-ovid <- tagDocumentWithId(ovid)
+##
+## Not relevant anymore
+##
+# tagDocumentWithId <- function(corpus) {
+#   for(i in c(1 : length(corpus))) {
+#     DublinCore(corpus[[i]], "id") <- i
+#   }
+#   corpus
+# }
+# 
+# ovid <- tagDocumentWithId(ovid)
 
 ###################################################################
 ## Construct DocumentTermMatrix and vice versa from Corpus object 
