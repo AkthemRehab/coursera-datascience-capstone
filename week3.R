@@ -1,176 +1,48 @@
-library(slam)
-library(reshape2)
-library(tm)
-library(ggplot2)
-library(wordcloud)
-library(RWeka)
+options( java.parameters = "-Xmx8g" )
+
+library(ggplot2); library(RWeka); library(slam); library(reshape2)
+library(tm); library(wordcloud)
 
 set.seed(55669)
 
-filePathSep <- "\\"
-fileNameSep <- "."
-swiftKeyDirectory <- ".\\data\\Coursera-SwiftKey"
-finalDirectory <- paste(swiftKeyDirectory, "final", sep = filePathSep)
-outputDirectory <- paste(swiftKeyDirectory, "output", sep = filePathSep) 
-localesAvail <- c("de_DE", "en_US", "fi_FI", "ru_RU")
-locales <- localesAvail[2]
-contexts <- c("blogs", "news", "twitter")
-fileExt <- "txt"
-
-getFileInfo <- function(directory) {
-  df <- data.frame(name = c(), size = c())
-  for (locale in locales) {
-    for (context in contexts) {
-      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
-      fullQualifiedFileName <- paste(directory, locale, fileName, sep = filePathSep)
-      if (file.exists(fullQualifiedFileName) == TRUE) {
-        fInfo <- file.info(fullQualifiedFileName)
-        fileSizeInMb <- paste(round(fInfo$size / 1024 / 1024, 2), "MB")
-        df <- rbind(df, data.frame(name = fileName, size = fileSizeInMb))
-      } else {
-        stop("File not found!") 
-      }
-    }
-  }
-  df
-}
-
-getFileInfo(finalDirectory)
-
-makeFqnOutputFilePath <- function(locale, context) {
-  localeDirectory <- paste(outputDirectory, locale, sep = filePathSep)
-  dir.create(localeDirectory, showWarnings = FALSE, recursive = TRUE)
-  fileName <- paste(locale, context, fileExt, sep = fileNameSep)
-  fqnOutputFileName <- paste(localeDirectory, fileName, sep = filePathSep)
-  fqnOutputFileName
-}
-
-makeReducedData <- function(fileName, factor = 0.01) {
-  connection <- file(fileName, "rb")
-  contents <- readLines(connection, encoding = "UTF-8", skipNul = TRUE)
-  newContents <- sample(contents, length(contents) * factor)
-  on.exit(close(connection))
-  newContents
-}
-
-writeDataToFile <- function(fileName, data, printFileName = FALSE) {
-  write(data, file = fileName) # over write file
-  if(printFileName == TRUE) print(fileName)
-}
-
-makeSampleFiles <- function() {
-  for (locale in locales) {
-    for (context in contexts) {
-      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
-      fullQualifiedFileName <- paste(finalDirectory, locale, fileName, sep = filePathSep)
-      if (file.exists(fullQualifiedFileName) == TRUE) {
-        writeDataToFile(
-          makeFqnOutputFilePath(locale, context), 
-          makeReducedData(fullQualifiedFileName))
-      } else {
-        stop("File not found!") 
-      }
-    }
-  }
-}
-
-######################################################
-## Produce sample file with 1% worth of orginal data
-######################################################
+source("./sampleData.R")
 makeSampleFiles()
 
-##
-## Get texts from a vector of files
-##
-getTexts <- function(files) {
-  allTexts <- c()
-  for (file in files) {
-    allTexts <- c(allTexts, readLines(file))
-  }
-  allTexts
-}
+enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
 
-makeFilePaths <- function() {
-  filePaths <- c()
-  for (locale in locales) {
-    for (context in contexts) {
-      outputPath <- paste(outputDirectory, locale, sep = filePathSep)
-      fileName <- paste(locale, context, fileExt, sep = fileNameSep)
-      filePaths <- c(filePaths, paste(outputPath, fileName, sep = filePathSep))
-    }
-  }
-  filePaths
-}
-
-# Test
-makeFilePaths()
-head(getTexts(makeFilePaths()))
-
-######################################################
-## Construct Corpus object based on vector source
-######################################################
-makeCorpus <- function(txts) {
-  vectorSource <- VectorSource(txts)
-  ovid <- Corpus(vectorSource)
+makeCorpus <- function(d) {
+  dirSource <- DirSource(directory = d, encoding = "UTF-8")
+  ovid <- VCorpus(dirSource, readerControl = list(language = "eng"))
+  on.exit(close(dirSource))
   ovid
 }
 
-ovid <- makeCorpus(getTexts(makeFilePaths()))
+ovid <- makeCorpus(enUsOutputDirectory)
 
-#########################################################
-## Cleaning the text documents within the Corpus object
-########################################################
 transformCorpus <- function(corpus) {
   corpus <- tm_map(corpus, tolower)
   corpus <- tm_map(corpus, removePunctuation)
   corpus <- tm_map(corpus, removeNumbers)
   # corpus <- tm_map(corpus, removeWords, stopwords("english"))
-  # corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
+  corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
   corpus <- tm_map(corpus, stripWhitespace)
   corpus <- tm_map(corpus, PlainTextDocument)
   corpus
 }
 
 ovid <- transformCorpus(ovid)
+
+tagDocumentWithId <- function(corpus) {
+  for(i in c(1 : length(corpus))) {
+    DublinCore(corpus[[i]], "id") <- i
+  }
+  corpus
+}
+
+ovid <- tagDocumentWithId(ovid)
+
 save(ovid, file="corpus.RData")
-
-##
-## Not relevant anymore
-##
-# tagDocumentWithId <- function(corpus) {
-#   for(i in c(1 : length(corpus))) {
-#     DublinCore(corpus[[i]], "id") <- i
-#   }
-#   corpus
-# }
-# 
-# ovid <- tagDocumentWithId(ovid)
-
-###################################################################
-## Construct DocumentTermMatrix and vice versa from Corpus object 
-###################################################################
-Sys.time()
-documentTermMatrix <- DocumentTermMatrix(ovid) # This will take a while
-Sys.time()
-
-#########################################################
-## Remove sparse data
-########################################################
-termDocumentMatrix <- as.TermDocumentMatrix(documentTermMatrix)
-termDocumentMatrix2 <- removeSparseTerms(termDocumentMatrix, 0.1) # Important !!!
-
-#########################################################
-## Word Cloud Analysis
-########################################################
-termDocumentMatrix3 <- as.matrix(termDocumentMatrix2)
-termDocumentMatrix4 <- melt(termDocumentMatrix3, value.name = "Count")
-termDocumentMatrix5 <- aggregate(Count ~ Terms, data = termDocumentMatrix4, sum)
-termDocumentMatrix6 <- termDocumentMatrix5[order(termDocumentMatrix5$Count, decreasing = TRUE), ]
-termDocumentMatrix6$Terms <- as.character(termDocumentMatrix6$Terms)
-
-wordcloud(termDocumentMatrix6$Terms, termDocumentMatrix6$Count, 
-          random.order = FALSE, rot.per = 0.35,
-          max.words = 150, colors = brewer.pal(6, "Dark2"))
+gc()
 
 #########################################################
 ## N Gram Analysis
@@ -180,15 +52,26 @@ gramTokenizer <- function(n) {
   NGramTokenizer(ovid, Weka_control(min = n, max = n))
 }
 
-oneGram <- gramTokenizer(1)
-biGram <- gramTokenizer(2)
-triGram <- gramTokenizer(3)
-fourGram <- gramTokenizer(4)
+Sys.time()
+oneGram <- gramTokenizer(1); gc()
+biGram <- gramTokenizer(2); gc()
+triGram <- gramTokenizer(3); gc()
+fourGram <- gramTokenizer(4); gc()
+fiveGram <- gramTokenizer(5); gc()
+Sys.time()
+
+save(oneGram, file = "oneGram.RData")
+save(biGram, file = "biGram.RData")
+save(triGram, file = "triGram.RData")
+save(fourGram, file = "fourGram.RData")
+save(fiveGram, file = "fiveGram.RData")
+gc()
 
 oneGramDf <- data.frame(table(oneGram))
 biGramDf <- data.frame(table(biGram))
 triGramDf <- data.frame(table(triGram))
 fourGramDf <- data.frame(table(fourGram))
+fiveGramDf <- data.frame(table(fiveGram))
 
 sanitizeGramDf <- function(df) {
   newDf <- data.frame(Term = as.character(df[, 1]), Count = df[, 2])
@@ -200,6 +83,7 @@ oneGramDf <- sanitizeGramDf(oneGramDf)
 biGramDf <- sanitizeGramDf(biGramDf)
 triGramDf <- sanitizeGramDf(triGramDf)
 fourGramDf <- sanitizeGramDf(fourGramDf)
+fiveGramDf <- sanitizeGramDf(fiveGramDf)
 
 sortGramDf <- function(df) {
   df[order(df$Count, decreasing = TRUE), ]
@@ -209,11 +93,15 @@ oneGramDf <- sortGramDf(oneGramDf)
 biGramDf <- sortGramDf(biGramDf)
 triGramDf <- sortGramDf(triGramDf)
 fourGramDf <- sortGramDf(fourGramDf)
+fiveGramDf <- sortGramDf(fiveGramDf)
+gc()
 
 reductionRows <- c(1: 30)
 oneGramDfReduced <- oneGramDf[reductionRows, ]
 biGramDfReduced <- biGramDf[reductionRows, ]
 triGramDfReduced <- triGramDf[reductionRows, ]
+fourGramDfReduced <- fourGramDf[reductionRows, ]
+fiveGramDfReduced <- fiveGramDf[reductionRows, ]
 
 plotNgram <- function(df, titleLabel, xLabel, yLabel) {
   plot1 <- ggplot(df, aes(x = reorder(Term, -Count), y = Count))
@@ -287,7 +175,7 @@ sampleTxts <- c("",
                 "Hello", 
                 "Hello there",
                 "thanks for the",
-                "and thanks for the"
+                "and thanks for the",
                 "Hello there has been a long time and thanks for the")
 
 for (txt in sampleTxts) {
@@ -368,8 +256,15 @@ getNextWordsSuggestion <- function(inputTxt) {
   nGramDf <- getNGramDf(N)
   endingWords <- getEndingWords(inputTxt)
   filteredNgrams <- filterNgrams(nGramDf, endingWords)
-  getLastWords(filteredNgrams)
+  filteredNgrams
+  # if (length(filteredNgrams) == 0) {
+  #  filteredNgrams <- oneGramDf[1:3, c("Term")]
+  # }
+  # getLastWords(filteredNgrams)
 }
+
+# Test
+getNextWordsSuggestion("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
 
 #########################################################
 ## Week3 quiz
