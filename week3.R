@@ -132,6 +132,7 @@ transformCorpus <- function(corpus) {
 }
 
 ovid <- transformCorpus(ovid)
+save(ovid, file="corpus.RData")
 
 ##
 ## Not relevant anymore
@@ -176,7 +177,7 @@ wordcloud(termDocumentMatrix6$Terms, termDocumentMatrix6$Count,
 ########################################################
 
 gramTokenizer <- function(n) {
-  NGramTokenizer(ovid, Weka_control(min = n, max = n, delimiters = " \\r\\n\\t.,;:\"()?!"))
+  NGramTokenizer(ovid, Weka_control(min = n, max = n))
 }
 
 oneGram <- gramTokenizer(1)
