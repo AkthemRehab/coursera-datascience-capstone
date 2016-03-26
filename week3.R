@@ -48,16 +48,16 @@ gc()
 ## N Gram Analysis
 ########################################################
 
-gramTokenizer <- function(n) {
-  NGramTokenizer(ovid, Weka_control(min = n, max = n))
+gramTokenizer <- function(corpus, n) {
+  NGramTokenizer(corpus, Weka_control(min = n, max = n))
 }
 
 Sys.time()
-oneGram <- gramTokenizer(1); gc()
-biGram <- gramTokenizer(2); gc()
-triGram <- gramTokenizer(3); gc()
-fourGram <- gramTokenizer(4); gc()
-fiveGram <- gramTokenizer(5); gc()
+oneGram <- gramTokenizer(ovid, 1); gc()
+biGram <- gramTokenizer(ovid, 2); gc()
+triGram <- gramTokenizer(ovid, 3); gc()
+fourGram <- gramTokenizer(ovid, 4); gc()
+fiveGram <- gramTokenizer(ovid, 5); gc()
 Sys.time()
 
 save(oneGram, file = "oneGram.RData")
@@ -116,6 +116,8 @@ plotNgram <- function(df, titleLabel, xLabel, yLabel) {
 plotNgram(oneGramDfReduced, "Top 30 1-Gram", "1-Gram", "Count of 1-Gram")
 plotNgram(biGramDfReduced, "Top 30 2-Grams", "2-Grams", "Count of 2-Grams")
 plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
+plotNgram(fourGramDfReduced, "Top 30 4-Grams", "4-Grams", "Count of 4-Grams")
+plotNgram(fiveGramDfReduced, "Top 30 5-Grams", "5-Grams", "Count of 5-Grams")
 
 #########################################################
 ## Building predictive model
