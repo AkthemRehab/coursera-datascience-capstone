@@ -146,9 +146,33 @@ getLastWords <- function(txts) {
   lastWords
 }
 
+##
+##
+##
+getLengthOfWords <- function(txt, seperator = " ") {
+  length(strsplit(txt, seperator)[[1]])
+}
+
+##
+## Get last N word out of a String
+##
+getLastNwords <- function(txt, n, seperator = " ") {
+  txtElems <- strsplit(txt, seperator)[[1]]
+  if (length(txtElems) < n) {
+    stop("Text length invalid.")
+  } else {
+    txtElems <- txtElems[(length(txtElems) - n + 1):length(txtElems)]
+  }
+  paste(txtElems, collapse = " ")
+}
+
 # Test
 getLastWord(filteredGrams[1])
 getLastWords(filteredGrams)
+getLastNwords("The guy in front of me just bought a pound of bacon, a bouquet, and a case of", 1) # [1] "of"
+getLastNwords("The guy in front of me just bought a pound of bacon, a bouquet, and a case of", 2) # [1] "case of"
+getLastNwords("The guy in front of me just bought a pound of bacon, a bouquet, and a case of", 3) # [1] "a case of"
+getLastNwords("The guy in front of me just bought a pound of bacon, a bouquet, and a case of", 4) # [1] "a case of"
 
 ##
 ## Get number of words from the end of string
@@ -246,27 +270,29 @@ class(getNGramDf(1))
 ## Match search text with entries in N Gram data.frame
 ##
 filterNgrams <- function(nGramDf, searchTxt) {
-  # Will perl = TRUE incure performance issue ???
-  nGramDf[grep(paste("^", searchTxt, sep = ""), nGramDf$Term, perl = TRUE), ][1:3, c("Term")]
+  # Will perl = TRUE incure performance issue ??? Or is it relevant ???
+  nGramDf[grep(paste("^", searchTxt, sep = ""), nGramDf$Term, perl = TRUE), ][, c("Term")]
 }
 
 ##
 ## Given a text string as input, predict the 3 following possible words
 ##
 getNextWordsSuggestion <- function(inputTxt) {
-  N <- getN(inputTxt)
-  nGramDf <- getNGramDf(N)
-  endingWords <- getEndingWords(inputTxt)
-  filteredNgrams <- filterNgrams(nGramDf, endingWords)
-  filteredNgrams
-  # if (length(filteredNgrams) == 0) {
-  #  filteredNgrams <- oneGramDf[1:3, c("Term")]
-  # }
-  # getLastWords(filteredNgrams)
+  suggestedWords <- c()
+  nGramDfNames <- c("fiveGramDf", "fourGramDf", "triGramDf", "biGramDf", "oneGramDf") # 4 3 2 1 0
+  for (i in 1:length(nGramDfNames)) {
+    preReq <- 5 - i
+    if (getLengthOfWords(inputTxt) < preReq) {
+      next
+    } else {
+      suggestedWords<-c(suggestedWords, filterNgrams(get(nGramDfNames[i]), getLastNwords(inputTxt, preReq)))
+    }
+  }
+  suggestedWords
 }
 
 # Test
-getNextWordsSuggestion("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
+head(getNextWordsSuggestion("The guy in front of me just bought a pound of bacon, a bouquet, and a case of"))
 
 #########################################################
 ## Week3 quiz
