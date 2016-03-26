@@ -1,3 +1,6 @@
+### 2016.03.26
+1. [How to go parallel in R](http://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/).
+
 ### 2016.03.25
 1. [R: Increase heap size for rJava](http://www.bramschoenmakers.nl/en/node/726)
 
