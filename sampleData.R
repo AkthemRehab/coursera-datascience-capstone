@@ -37,7 +37,7 @@ makeFqnOutputFilePath <- function(locale, context) {
   fqnOutputFileName
 }
 
-makeReducedData <- function(fileName, factor = 0.01) {
+makeReducedData <- function(fileName, factor) {
   connection <- file(fileName, "rb")
   contents <- readLines(connection, encoding = "UTF-8", skipNul = TRUE)
   newContents <- sample(contents, length(contents) * factor)
@@ -50,7 +50,7 @@ writeDataToFile <- function(fileName, data, printFileName = FALSE) {
   if(printFileName == TRUE) print(fileName)
 }
 
-makeSampleFiles <- function() {
+makeSampleFiles <- function(sampleSize = 0.01) {
   for (locale in locales) {
     for (context in contexts) {
       fileName <- paste(locale, context, fileExt, sep = fileNameSep)
@@ -58,7 +58,7 @@ makeSampleFiles <- function() {
       if (file.exists(fullQualifiedFileName) == TRUE) {
         writeDataToFile(
           makeFqnOutputFilePath(locale, context), 
-          makeReducedData(fullQualifiedFileName))
+          makeReducedData(fullQualifiedFileName, sampleSize))
       } else {
         stop("File not found!") 
       }

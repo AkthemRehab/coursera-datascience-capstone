@@ -1,44 +1,16 @@
-options( java.parameters = "-Xmx8g" )
-
-library(ggplot2); library(RWeka); library(slam); library(reshape2)
-library(tm); library(wordcloud)
+options(java.parameters = "-Xmx8192m" )
+library(ggplot2); library(slam); library(tm);
+library(RWeka)
 
 set.seed(55669)
 
 source("./sampleData.R")
-makeSampleFiles()
+makeSampleFiles(0.01) # 3%
 
+source("./constructCorpus.R")
 enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
-
-makeCorpus <- function(d) {
-  dirSource <- DirSource(directory = d, encoding = "UTF-8")
-  ovid <- VCorpus(dirSource, readerControl = list(language = "eng"))
-  on.exit(close(dirSource))
-  ovid
-}
-
 ovid <- makeCorpus(enUsOutputDirectory)
-
-transformCorpus <- function(corpus) {
-  corpus <- tm_map(corpus, tolower)
-  corpus <- tm_map(corpus, removePunctuation)
-  corpus <- tm_map(corpus, removeNumbers)
-  # corpus <- tm_map(corpus, removeWords, stopwords("english"))
-  corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
-  corpus <- tm_map(corpus, stripWhitespace)
-  corpus <- tm_map(corpus, PlainTextDocument)
-  corpus
-}
-
 ovid <- transformCorpus(ovid)
-
-tagDocumentWithId <- function(corpus) {
-  for(i in c(1 : length(corpus))) {
-    DublinCore(corpus[[i]], "id") <- i
-  }
-  corpus
-}
-
 ovid <- tagDocumentWithId(ovid)
 
 save(ovid, file="corpus.RData")
@@ -48,17 +20,31 @@ gc()
 ## N Gram Analysis
 ########################################################
 
+source("./parallelProcessing.R")
 gramTokenizer <- function(corpus, n) {
-  NGramTokenizer(corpus, Weka_control(min = n, max = n))
+  options(java.parameters = "-Xmx8192m" )
+  RWeka::NGramTokenizer(corpus, RWeka::Weka_control(min = n, max = n))
 }
 
+cluster <- startParallelProcessing()
+clusterEvalQ(cluster, function() { 
+  options(java.parameters = "-Xmx8192m" )
+  library(RWeka)
+  })
 Sys.time()
-oneGram <- gramTokenizer(ovid, 1); gc()
-biGram <- gramTokenizer(ovid, 2); gc()
-triGram <- gramTokenizer(ovid, 3); gc()
-fourGram <- gramTokenizer(ovid, 4); gc()
-fiveGram <- gramTokenizer(ovid, 5); gc()
+ngrams <- foreach(x = c(1:5),
+                  .combine = list,
+                  .multicombine = TRUE,
+                  .export = "ovid") %dopar% 
+  gramTokenizer(ovid, x)
+stopParallelProcessing(cluster)
 Sys.time()
+gc()
+
+oneGram <- ngrams[[1]]; biGram <- ngrams[[2]]; triGram <- ngrams[[3]];
+fourGram <- ngrams[[4]]; fiveGram <- ngrams[[5]]
+rm(ngrams)
+gc()
 
 save(oneGram, file = "oneGram.RData")
 save(biGram, file = "biGram.RData")
@@ -96,8 +82,20 @@ fourGramDf <- sortGramDf(fourGramDf)
 fiveGramDf <- sortGramDf(fiveGramDf)
 gc()
 
-# source("nGramAnalysis.R")
+source("nGramAnalysis.R")
 
+reductionRows <- c(1: 30)
+oneGramDfReduced <- oneGramDf[reductionRows, ]
+biGramDfReduced <- biGramDf[reductionRows, ]
+triGramDfReduced <- triGramDf[reductionRows, ]
+fourGramDfReduced <- fourGramDf[reductionRows, ]
+fiveGramDfReduced <- fiveGramDf[reductionRows, ]
+
+plotNgram(oneGramDfReduced, "Top 30 1-Gram", "1-Gram", "Count of 1-Gram")
+plotNgram(biGramDfReduced, "Top 30 2-Grams", "2-Grams", "Count of 2-Grams")
+plotNgram(triGramDfReduced, "Top 30 3-Grams", "3-Grams", "Count of 3-Grams")
+plotNgram(fourGramDfReduced, "Top 30 4-Grams", "4-Grams", "Count of 4-Grams")
+plotNgram(fiveGramDfReduced, "Top 30 5-Grams", "5-Grams", "Count of 5-Grams")
 #########################################################
 ## Building predictive model
 ########################################################
@@ -169,13 +167,8 @@ getNextWordsSuggestion <- function(inputTxt) {
       }
     }
   }
-  suggestedWords[1:10]
+  unique(suggestedWords[1:30])[1:3]
 }
-
-# Test
-# getNextWordsSuggestion("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
-# getNextWordsSuggestion("You're the reason why I smile everyday. Can you follow me please? It would mean the")
-# getNextWordsSuggestion("Hey sunshine, can you follow me and make me the")
 
 #########################################################
 ## Week3 quiz
