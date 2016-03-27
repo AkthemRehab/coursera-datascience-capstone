@@ -1,3 +1,7 @@
+### 2016.03.27
+1. [Very good explanation on back off by Coursera class mate](https://www.coursera.org/learn/data-science-project/module/VNKmf/discussions/V40gAPE3EeWFuw7QEATDpw)
+2. Look into **Kneser-Ney Smoothing**
+
 ### 2016.03.26
 1. [How to go parallel in R](http://www.r-bloggers.com/how-to-go-parallel-in-r-basics-tips/).
 
