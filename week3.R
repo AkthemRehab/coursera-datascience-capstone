@@ -53,6 +53,10 @@ save(fourGram, file = "fourGram.RData")
 save(fiveGram, file = "fiveGram.RData")
 gc()
 
+rm(oneGram); rm(biGram); rm(triGram); rm(fourGram); rm(fiveGram)
+load("oneGram.RData"); load("biGram.RData"); load("triGram.RData"); 
+load("fourGram.RData"); load("fiveGram.RData")
+
 oneGramDf <- data.frame(table(oneGram))
 biGramDf <- data.frame(table(biGram))
 triGramDf <- data.frame(table(triGram))
@@ -167,7 +171,9 @@ getNextWordsSuggestion <- function(inputTxt) {
       }
     }
   }
-  unique(suggestedWords[1:30])[1:3]
+  suggestedWords <- subset(suggestedWords, !(suggestedWords %in% stopwords()))
+  suggestedWords <- unique(suggestedWords)
+  suggestedWords[1:3]
 }
 
 #########################################################
