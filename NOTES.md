@@ -1,3 +1,12 @@
+### 2016.03.31
+Week 4 very useful materials:
+
+1. [http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction](http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction)
+2. [https://cran.r-project.org/web/packages/tau/tau.pdf](https://cran.r-project.org/web/packages/tau/tau.pdf).
+3. [http://www.modsimworld.org/papers/2015/Natural_Language_Processing.pdf](http://www.modsimworld.org/papers/2015/Natural_Language_Processing.pdf)
+4. [http://www.dormantroot.com/2015/02/predicting-words-using-n-gram-modeling.html](http://www.dormantroot.com/2015/02/predicting-words-using-n-gram-modeling.html).
+5. [https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R](https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R)
+
 ### 2016.03.27
 1. [Very good explanation on back off by Coursera class mate](https://www.coursera.org/learn/data-science-project/module/VNKmf/discussions/V40gAPE3EeWFuw7QEATDpw)
 2. Look into **Kneser-Ney Smoothing**
