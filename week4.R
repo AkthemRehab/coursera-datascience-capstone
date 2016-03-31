@@ -1,25 +1,33 @@
-# http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction
-
-install.packages("tau")
-library(tau)
-f <- function(queryHistoryTab, query, n = 2) {
-  trigrams <- sort(textcnt(rep(tolower(names(queryHistoryTab)), queryHistoryTab), method = "string", 
-                           n = length(scan(text = query, what = "character", quiet = TRUE)) + 1))
-  query <- tolower(query)
-  idx <- which(substr(names(trigrams), 0, nchar(query)) == query)
-  res <- head(names(sort(trigrams[idx], decreasing = TRUE)), n)
-  res <- substr(res, nchar(query) + 2, nchar(res))
-  return(res)
+set.seed(123456789)
+# load unigram and bigrams
+load("oneGram.RData"); load("biGram.RData");
+sanitizeDataFrame <- function(df) {
+  names(df) <- c("Terms", "Count")
+  df$Terms <- as.character(df$Terms)
+  df <- df[order(df$Count, decreasing = TRUE), ]
+  df
 }
-
-history <- c("Can of beer" = 3, "can of Soda" = 2, "A can of water" = 1, "Buy me a can of soda, please" = 2)
-class(history) # "numeric"
-head(history)
-f(history, "Can of")
-# [1] "soda" "beer"
-names(history) # [1] "Can of beer"                  "can of Soda"                  "A can of water"               "Buy me a can of soda, please"
-rep(tolower(names(history)), history)
-sort(textcnt(rep(tolower(names(history)), history), method = "string", 
-             n = length(scan(text = "1", what = "character", quiet = TRUE)) + 1))
+oneGramDf <- sanitizeDataFrame(data.frame(table(oneGram)))
+biGramDf <- sanitizeDataFrame(data.frame(table(biGram)))
+# only alphabet words remain
+oneGramDf1 <- oneGramDf[grepl("^[a-z]+$", oneGramDf$Terms, perl = TRUE), ]
+# remove stop words
+library(tm)
+oneGramDf2 <- oneGramDf1[!oneGramDf1$Terms %in% stopwords(), ]
+# remove words that has less occurence by threshold
+oneGramDf3 <- oneGramDf2
+oneGramDf3$Probability <- oneGramDf2$Count / nrow(oneGramDf2)
+summary(oneGramDf3)
+occurenceThreshold <- 1.694e-05
+oneGramDf4 <- oneGramDf3[oneGramDf3$Probability >= occurenceThreshold, ]
+# create n x n matrix according to length of unigram
+lengthOfOneGram <- nrow(oneGramDf4)
+transitionMatrix <- matrix(data = rep(0, as.numeric(lengthOfOneGram) * as.numeric(lengthOfOneGram)),
+                           nrow = as.numeric(lengthOfOneGram), ncol = as.numeric(lengthOfOneGram)
+                           )
+# for each unigram search for combinations from bigram with ^ meta pattern match
+for (term in oneGramDf4[c(22334: 22350), ][, "Terms"]) {
+  print(biGramDf[grep(paste("^", term, " ", sep=""), biGramDf$Term, perl = TRUE), ])
+}
 
 
