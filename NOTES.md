@@ -1,11 +1,16 @@
+### 2016.04.02
+
+1. [The markovchain Package: A  Package for Easily Handling Discrete Markov Chains in R, page 5](https://cran.r-project.org/web/packages/markovchain/vignettes/an_introduction_to_markovchain_package.pdf)
+2. [all.equal may be a better operator to compare objects](http://stackoverflow.com/questions/9508518/why-are-these-numbers-not-equal)
+
 ### 2016.03.31
 Week 4 very useful materials:
 
-1. [http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction](http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction)
-2. [https://cran.r-project.org/web/packages/tau/tau.pdf](https://cran.r-project.org/web/packages/tau/tau.pdf).
-3. [http://www.modsimworld.org/papers/2015/Natural_Language_Processing.pdf](http://www.modsimworld.org/papers/2015/Natural_Language_Processing.pdf)
+1. [Implementing n-grams for next word prediction with tau package](http://stackoverflow.com/questions/31316274/implementing-n-grams-for-next-word-prediction)
+2. [tau Package](https://cran.r-project.org/web/packages/tau/tau.pdf).
+3. [Natural Language Processing: A Model to Predict a Sequence of Words](http://www.modsimworld.org/papers/2015/Natural_Language_Processing.pdf) - Very detailed paper
 4. [http://www.dormantroot.com/2015/02/predicting-words-using-n-gram-modeling.html](http://www.dormantroot.com/2015/02/predicting-words-using-n-gram-modeling.html).
-5. [https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R](https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R)
+	* [https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R](https://github.com/dormantroot/Data-Science/blob/master/Capstone%20Project/PredictWord/predictNextWord.R)
 
 ### 2016.03.27
 1. [Very good explanation on back off by Coursera class mate](https://www.coursera.org/learn/data-science-project/module/VNKmf/discussions/V40gAPE3EeWFuw7QEATDpw)
