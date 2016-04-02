@@ -109,15 +109,14 @@ write.table(transitionMatrix, "transitionMatrix.txt")
 library("markovchain")
 markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
 
-predictFollowingWord <- function(model, , numberOfOutCome = 10) {
+predictFollowingWord <- function(model, input, numberOfOutCome = 10) {
   inputString <- input
   inputStringParts <- strsplit(inputString, " ")[[1]]
   inputStringLength <- length(inputStringParts)
-  dictionary <- states(markovChainModel)
+  dictionary <- states(model)
   
   getRandomIndex <- function (len) (len * runif(1)) + 1
-  getRandomWord <- 
-    function (len, dictionary = dictionary) dictionary[getRandomIndex(len)]
+  getRandomWord <- function (len, dictionary) dictionary[getRandomIndex(len)]
   
   currentState <- NULL
   nextState <- NULL
@@ -126,7 +125,7 @@ predictFollowingWord <- function(model, , numberOfOutCome = 10) {
   
   currentState <- inputStringParts[1]
   if (!currentState %in% dictionary)
-    currentState <- getRandomWord(inputStringLength)
+    currentState <- getRandomWord(inputStringLength, dictionary)
   
   remainingInputStringParts <- inputStringParts[2:inputStringLength]
   
@@ -150,10 +149,40 @@ predictFollowingWord <- function(model, , numberOfOutCome = 10) {
   cache$conditionalProbabilities <- 
     sort(conditionalDistribution(markovChainModel, currentState),
          decreasing = TRUE)[1:numberOfOutcome]
+  
+  cache
+}
+
+preprocessInputText <- function(inputText) {
+  corpus <- Corpus(VectorSource(inputText))
+  corpus <- tm_map(corpus, tolower)
+  corpus <- tm_map(corpus, removePunctuation)
+  corpus <- tm_map(corpus, removeNumbers)
+  # corpus <- tm_map(corpus, removeWords, stopwords("english"))
+  corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
+  corpus <- tm_map(corpus, stripWhitespace)
+  corpus <- tm_map(corpus, PlainTextDocument)
+  return(as.character(corpus[[1]]))
 }
 
 week4 <- function() {
   questions <- c(
     "When you breathe, I want to be the air for you. I'll be there for you, I'd live and I'd",
-    "Guy at my table's wife got up to go to the bathroom and I asked about dessert and he started telling me about his")
+    "Guy at my table's wife got up to go to the bathroom and I asked about dessert and he started telling me about his",
+    "I'd give anything to see arctic monkeys this",
+    "Talking to your mom has the same effect as a hug and helps reduce your",
+    "When you were in Holland you were like 1 inch away from me but you hadn't time to take a",
+    "I'd just like all of these questions answered, a presentation of evidence, and a jury to settle the",
+    "I can't deal with unsymetrical things. I can't even hold an uneven number of bags of groceries in each",
+    "Every inch of you is perfect from the bottom to the",
+    "I'm thankful my childhood was filled with imagination and bruises from playing",
+    "I like how the same people are in almost all of Adam Sandler's")
+  for (i in 1:length(questions)) {
+    predictions <- predictFollowingWord(markovChainModel, preprocessInputText(questions[i]))
+    print(predictions)
+    # answer <- paste("Q", i, ": ", , sep = "")
+    # print(answer)
+  }
 }
+week4()
+
