@@ -1,59 +1,43 @@
+library(tm)
 set.seed(123456789)
 # load unigram and bigrams
 load("oneGram.RData"); load("biGram.RData");
+# clean ngram vector
+oneGram <- oneGram[grep("^[a-z]+$", oneGram, perl = TRUE)]
+biGram <- biGram[grep("^[a-z]+ [a-z]+$", biGram, perl = TRUE)]
+################################################################################
+oneGram <- data.frame(table(oneGram))
+biGram <- data.frame(table(biGram))
 sanitizeDataFrame <- function(df) {
   names(df) <- c("Term", "Count")
   df$Term <- as.character(df$Term)
   df <- df[order(df$Count, decreasing = TRUE), ]
   df
 }
-oneGramDf <- sanitizeDataFrame(data.frame(table(oneGram)))
-biGramDf <- sanitizeDataFrame(data.frame(table(biGram)))
-# only alphabet words remain
-oneGramDf1 <- oneGramDf[grepl("^[a-z]+$", oneGramDf$Term, perl = TRUE), ]
-# remove stop words
-library(tm)
-oneGramDf2 <- oneGramDf1[!oneGramDf1$Term %in% stopwords(), ]
-summary(oneGramDf2)
-# Term with 1 Count
-nrow(oneGramDf2[oneGramDf2$Count == 1, ]) # [1] 32366
-# Remove Term with 1 Count
-oneGramDf2 <- oneGramDf2[oneGramDf2$Count != 1, ]
-# remove words that has less occurence by threshold
-# sum(oneGramDf2$Count) # [1] 536568
-oneGramDf3 <- oneGramDf2
-writeLines(text = oneGramDf3$Term, con = "oneGramDf3Term.txt")
-# applying spell check filtering
-spellChecked <- aspell("oneGramDf3Term.txt")
-# head(spellChecked[[1]])
-spellCheckedList <- tolower(unlist(spellChecked$Suggestions))
-writeLines(text = spellCheckedList, con = "oneGramDf3TermpellChecked.txt")
-# filter against spell check
-oneGramDf4 <- oneGramDf3[oneGramDf3$Term %in% spellCheckedList, ]
-# further cleaning with regexp
-# stickyAlphaRegexp <- ""
-# for (i in 1:length(letters)) {
-#   regexp1 <- paste(letters[i], letters[i], sep = "")
-#   if (i == length(letters)) stickyAlphaRegexp <- paste(stickyAlphaRegexp, regexp1, sep = "")
-#   else stickyAlphaRegexp <- paste(stickyAlphaRegexp, regexp1, "|", sep = "")
-# }
-# oneGramDf5 <- oneGramDf4[grep(stickyAlphaRegexp, oneGramDf4$Term, perl = TRUE), ]
-# consider only anything more than mean
-summary(oneGramDf4)
-oneGramDf5 <- oneGramDf4[oneGramDf4$Count >= 31, ]
-
-oneGramDfFinal <- oneGramDf5[1:1000, ]
-head(oneGramDfFinal, 50)
-
+oneGram <- sanitizeDataFrame(oneGram);
+format(object.size(oneGram), units = "MB") # [1] "7.2 Mb"
+biGram <- sanitizeDataFrame(biGram)
+format(object.size(biGram), units = "MB") # [1] "81 Mb"
+################################################################################
+oneGram <- oneGram[oneGram$Count!=1,]
+library(dplyr)
+oneGramDf <- sample_n(oneGram, nrow(oneGram) / 50)
+biGramDf <- sample_n(biGram, nrow(biGram) / 16 )
+format(object.size(biGramDf), units = "MB")
+################################################################################
+oneGramDfFinal <- oneGramDf
+################################################################################
+lengthOfOneGram <- nrow(oneGramDfFinal)
+# create n x n matrix according to length of unigram
+transitionMatrix <- matrix(data = rep(0, as.numeric(lengthOfOneGram) * as.numeric(lengthOfOneGram)),
+                           nrow = as.numeric(lengthOfOneGram), ncol = as.numeric(lengthOfOneGram),
+                           dimnames = list(oneGramDfFinal$Term, oneGramDfFinal$Term))
 # lowest probability in onegram
 oneGramDfFinal$Probability <- oneGramDfFinal$Count / sum(oneGramDfFinal$Count)
 lowestProbability <- min(oneGramDfFinal$Probability)
 # investigation about matrix access
 allPossibleNextWords <- dimnames(transitionMatrix)[[1]]
-# create n x n matrix according to length of unigram
-transitionMatrix <- matrix(data = rep(0, as.numeric(lengthOfOneGram) * as.numeric(lengthOfOneGram)),
-                           nrow = as.numeric(lengthOfOneGram), ncol = as.numeric(lengthOfOneGram),
-                           dimnames = list(oneGramDfFinal$Term, oneGramDfFinal$Term))
+
 # for each unigram search for combinations from bigram with ^ meta pattern match
 for (term in oneGramDfFinal[, "Term"]) {
   filteredBiGram <- biGramDf[grep(paste("^", term, " ", sep=""), biGramDf$Term, perl = TRUE), ]
@@ -106,10 +90,14 @@ warnings()
 save(transitionMatrix, file = "transitionMatrix.RData")
 write.table(transitionMatrix, "transitionMatrix.txt")
 
+################################################################################
+load("./transitionMatrix.RData")
+
 library("markovchain")
 markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
+# save(markovChainModel, file = "markovChainModel.RData")
 
-predictFollowingWord <- function(model, input, numberOfOutCome = 10) {
+predictFollowingWord <- function(model, input, numberOfOutcome = 10) {
   inputString <- input
   inputStringParts <- strsplit(inputString, " ")[[1]]
   inputStringLength <- length(inputStringParts)
@@ -126,21 +114,22 @@ predictFollowingWord <- function(model, input, numberOfOutCome = 10) {
   currentState <- inputStringParts[1]
   if (!currentState %in% dictionary)
     currentState <- getRandomWord(inputStringLength, dictionary)
+  cache$stateHistory  <- c(cache$stateHistory, currentState)
   
   remainingInputStringParts <- inputStringParts[2:inputStringLength]
   
   for (remainingInputString in remainingInputStringParts) {
     nextState <- remainingInputString
     
-    if (!nextState %in% ?conditionalDistribution)
+    if (!nextState %in% ?conditionalDistribution) {
       nextPossibilities <- conditionalDistribution(markovChainModel, currentState)
-    
-    nextStates <- dictionary[which.max(nextPossibilities)]
-    if (length(nextStates) > 0) 
-      nextState <- nextStates[getRandomIndex(length(nextStates))]
-    else
-      warning("Unable to find next state in model")
-    
+      
+      nextStates <- dictionary[which.max(nextPossibilities)]
+      if (length(nextStates) > 0) 
+        nextState <- nextStates[getRandomIndex(length(nextStates))]
+      else
+        warning("Unable to find next state in model")
+    }
     currentState <- nextState
     
     cache$stateHistory  <- c(cache$stateHistory, currentState)

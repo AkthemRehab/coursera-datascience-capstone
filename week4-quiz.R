@@ -15,8 +15,6 @@ week4 <- function() {
   for (i in 1:length(questions)) {
     predictions <- predictFollowingWord(markovChainModel, preprocessInputText(questions[i]))
     print(predictions)
-    # answer <- paste("Q", i, ": ", , sep = "")
-    # print(answer)
   }
 }
 week4()

@@ -1,7 +1,8 @@
 library(tm)
 library(markovchain)
 
-load("./transitionMatrix.RData")
+load("./transitionMatrix.RData"); # format(object.size(transitionMatrix), units = "MB") # [1] "280.5 Mb"
+load("./dormantroot/transitionMatrix.RData"); format(object.size(transitionMatrix), units = "MB") # [1] "13.5 Mb"
 markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
 # save(markovChainModel, file = "markovChainModel")
 
@@ -65,6 +66,4 @@ preprocessInputText <- function(inputText) {
   return(as.character(corpus[[1]]))
 }
 
-
-##
-predictFollowingWord(markovChainModel, preprocessInputText("a sophomore nursing student from Bayonne, made friends with Kevin Menendez the summer before they"))
+predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"))
