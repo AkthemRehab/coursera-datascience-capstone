@@ -1,4 +1,5 @@
 options(java.parameters = "-Xmx8192m" )
+options(mc.cores = 3)
 library(ggplot2); library(slam);
 
 filePathSep <- "\\"
@@ -13,25 +14,29 @@ fileExt <- "txt"
 set.seed(55669)
 
 source("./week3-sampleData.R")
-makeSampleFiles(0.03) # 3%
+makeSampleFiles(0.01) # 3%
 
 source("./week3-constructCorpus.R")
 enUsOutputDirectory <- paste(outputDirectory, locales, sep = filePathSep)
-ovid <- tagDocumentWithId(transformCorpus(makeCorpus(enUsOutputDirectory)))
+ovid <- makeCorpus(enUsOutputDirectory)
+ovid <- transformCorpus(ovid)
+# ovid <- tagDocumentWithId(ovid)
 save(ovid, file="corpus.RData"); rm(ovid)
 
 source("./week3-nGramMaker.R")
 load("corpus.RData")
-ngrams <- makeNGrams(corpus)
+ngrams <- makeNGrams(ovid)
 oneGram <- ngrams[[1]]; biGram <- ngrams[[2]]; triGram <- ngrams[[3]];
-fourGram <- ngrams[[4]]; fiveGram <- ngrams[[5]]
+# fourGram <- ngrams[[4]]; fiveGram <- ngrams[[5]]
 rm(ngrams); gc()
 save(oneGram, file = "oneGram.RData")
 save(biGram, file = "biGram.RData")
 save(triGram, file = "triGram.RData")
-save(fourGram, file = "fourGram.RData")
-save(fiveGram, file = "fiveGram.RData")
-rm(oneGram); rm(biGram); rm(triGram); rm(fourGram); rm(fiveGram); gc()
+# save(fourGram, file = "fourGram.RData")
+# save(fiveGram, file = "fiveGram.RData")
+rm(oneGram); rm(biGram); rm(triGram); 
+# rm(fourGram); rm(fiveGram); 
+gc()
 
 source("./week3-nGramAnalysis.R")
 load("oneGram.RData"); load("biGram.RData"); load("triGram.RData"); 

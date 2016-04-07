@@ -1,15 +1,16 @@
 source("./week3-parallelProcessing.R")
 
-setJvmOption <- function() {
-  options(java.parameters = "-Xmx8192m" )
-}
-
-gramTokenizer <- function(corpus, n) {
-  setJvmOption()
-  RWeka::NGramTokenizer(corpus, RWeka::Weka_control(min = n, max = n))
-}
-
+# Scoping issue
 makeNGrams <- function(ovid) {
+  setJvmOption <- function() {
+    options(java.parameters = "-Xmx8192m" )
+  }
+  
+  gramTokenizer <- function(ovid, n) {
+    setJvmOption()
+    RWeka::NGramTokenizer(ovid, RWeka::Weka_control(min = n, max = n))
+  }
+  
   cluster <- startParallelProcessing()
   clusterEvalQ(cluster, function() { 
     setJvmOption()
@@ -18,14 +19,17 @@ makeNGrams <- function(ovid) {
   
   print(paste("START TIME:", Sys.time()))
   
-  ngrams <- foreach(x = c(1:2),
+  ngrams <- foreach(x = c(1:3),
                     .combine = list,
                     .multicombine = TRUE,
-                    .export = "ovid") %dopar% gramTokenizer(ovid, x)
+                    .export = "ovid") %dopar% 
+    gramTokenizer(ovid, x)
   
   stopParallelProcessing(cluster)
   
   print(paste("END TIME:", Sys.time()))
   
   gc()
+  
+  return(ngrams)
 }
