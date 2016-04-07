@@ -14,7 +14,7 @@ stopParallelProcessing <- function(cluster) {
   stopImplicitCluster()
 }
 
-############################################
+###########################################
 ## Sample code for parallel processing
 ###########################################
 # cluster <- startParallelProcessing()

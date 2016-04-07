@@ -1,3 +1,7 @@
+### 2016.04.05
+1. Transition Matrix needs revision based on [this](https://lagunita.stanford.edu/c4x/Engineering/CS-224N/asset/slp4.pdf).
+
+
 ### 2016.04.02
 
 1. [The markovchain Package: A  Package for Easily Handling Discrete Markov Chains in R, page 5](https://cran.r-project.org/web/packages/markovchain/vignettes/an_introduction_to_markovchain_package.pdf)
