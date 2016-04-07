@@ -1,3 +1,7 @@
+### 2016.07.04
+1. [Different Approaches to Unknown Words in a
+Hidden Markov Model Part-of-Speech Tagger](http://stp.lingfil.uu.se/~nivre/statmet/haulrich.pdf).
+
 ### 2016.04.05
 1. Transition Matrix needs revision based on [this](https://lagunita.stanford.edu/c4x/Engineering/CS-224N/asset/slp4.pdf).
 
