@@ -18,10 +18,10 @@ rm(oneGram); rm(oneGramFreqOne); gc()
 
 # ------------------------------------------------------------------------------
 # Cleaning individual ngrams
+# 1. Get only characters
 # ------------------------------------------------------------------------------
 load("oneGram.RData")
 oneGramCleaned <- preprocessNgramVector(oneGram)
-oneGramCleaned <- oneGramCleaned[!oneGramCleaned %in% oneGramFreqOne]
 save(oneGramCleaned, file = "oneGramCleaned.RData")
 rm(oneGram); rm(oneGramCleaned); gc()
 
@@ -45,6 +45,15 @@ UNK <- "<UNK>"
 
 Sys.time()
 
+load("oneGramCleaned.RData")
+oneGramParsed <- unlist(
+  lapply(oneGramCleaned, function(term) {
+    ifelse(term %in% oneGramFreqOne, UNK, term)
+  }))
+save(oneGramParsed, file = "oneGramParsed.RData")
+rm(oneGramParsed); rm(oneGramParsed); gc()
+
+load("biGramCleaned.RData")
 biGramParsed <- unlist(
   lapply(biGramCleaned, function(terms){
     termParts <- strsplit(terms, " ")[[1]]
@@ -56,6 +65,7 @@ biGramParsed <- unlist(
 save(biGramParsed, file = "biGramParsed.RData")
 rm(biGramCleaned); rm(biGramParsed); gc()
 
+load("triGramCleaned.RData")
 triGramParsed <- unlist(
   lapply(triGramCleaned, function(terms){
     termParts <- strsplit(terms, " ")[[1]]
