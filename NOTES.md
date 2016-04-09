@@ -1,3 +1,6 @@
+### 2016.04.09
+1. [Deploying Shiny apps with shinyapps.io](http://www.r-bloggers.com/deploying-shiny-apps-with-shinyapps-io/)
+
 ### 2016.07.04
 1. [Different Approaches to Unknown Words in a
 Hidden Markov Model Part-of-Speech Tagger](http://stp.lingfil.uu.se/~nivre/statmet/haulrich.pdf).

@@ -19,15 +19,21 @@ rm(oneGram); rm(oneGramFreqOne); gc()
 # ------------------------------------------------------------------------------
 # Cleaning individual ngrams
 # ------------------------------------------------------------------------------
+load("oneGram.RData")
+oneGramCleaned <- preprocessNgramVector(oneGram)
+oneGramCleaned <- oneGramCleaned[!oneGramCleaned %in% oneGramFreqOne]
+save(oneGramCleaned, file = "oneGramCleaned.RData")
+rm(oneGram); rm(oneGramCleaned); gc()
+
 load("biGram.RData")
 biGramCleaned <- biGram[grep("^[a-z]+ [a-z]+$", biGram, perl = TRUE)]
 save(biGramCleaned, file = "biGramCleaned.RData")
-rm(biGram)
+rm(biGram); rm(biGramCleaned); gc()
 
 load("triGram.RData")
 triGramCleaned <- triGram[grep("^[a-z]+ [a-z]+ [a-z]+$", triGram, perl = TRUE)]
 save(triGramCleaned, file = "triGramCleaned.RData")
-rm(triGram)
+rm(triGram); rm(triGramCleaned); gc();
 
 gc()
 
@@ -63,3 +69,29 @@ save(triGramParsed, file = "triGramParsed.RData")
 rm(triGramCleaned); rm(triGramParsed); gc()
 
 Sys.time()
+rm(UNK)
+
+# ------------------------------------------------------------------------------
+# Make Term Count Data Frame
+# ------------------------------------------------------------------------------
+sanitizeDataFrame <- function(df) {
+  names(df) <- c("Term", "Count")
+  df$Term <- as.character(df$Term)
+  df
+}
+
+sortDataFrame <- function(df) {
+  df[order(df$Count, decreasing = TRUE), ]
+}
+
+load("biGramParsed.RData")
+biGramDataFrame <- data.frame(table(biGramParsed))
+biGramDataFrame <- sortDataFrame(sanitizeDataFrame(biGramDataFrame))
+save(biGramDataFrame, file = "biGramDataFrame.RData")
+rm(biGramParsed); rm(biGramDataFrame); gc();
+
+load("triGramParsed.RData")
+triGramDataFrame <- data.frame(table(triGramParsed))
+triGramDataFrame <- sortDataFrame(sanitizeDataFrame(triGramDataFrame))
+save(triGramDataFrame, file = "triGramDataFrame.RData")
+rm(triGramParsed); rm(triGramDataFrame); gc();
