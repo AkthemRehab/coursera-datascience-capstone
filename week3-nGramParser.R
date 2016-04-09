@@ -51,7 +51,7 @@ oneGramParsed <- unlist(
     ifelse(term %in% oneGramFreqOne, UNK, term)
   }))
 save(oneGramParsed, file = "oneGramParsed.RData")
-rm(oneGramParsed); rm(oneGramParsed); gc()
+rm(oneGramCleaned); rm(oneGramParsed); gc()
 
 load("biGramCleaned.RData")
 biGramParsed <- unlist(
