@@ -67,7 +67,20 @@ transitionMatrix <- makeTransitionMatrixCount(
   subset(oneGramDataFrame, Count >= 13.00)$Term, biGramDataFrameEnriched)
 save(transitionMatrix, file = "transitionMatrix.RData")
 rm(oneGramDataFrame); rm(biGramDataFrameEnriched); rm(transitionMatrix);
+
 # ------------------------------------------------------------------------------
 # PART 2: Make Transition Matrix with Probability
+# 1. Use +1 smoothing
 # ------------------------------------------------------------------------------
+load("transitionMatrix.RData")
+dimNames <- dimnames(transitionMatrix)
+rowNames <- dimNames[[1]]; colNames <- dimNames[[2]]
+rm(dimNames) # identical(rowNames, colNames)
+
+for (rowName in rowNames) {
+  for (colName in colNames) {
+    transitionMatrix[rowName, colName] <- transitionMatrix[rowName, colName] + 1
+  }
+}
+
 
