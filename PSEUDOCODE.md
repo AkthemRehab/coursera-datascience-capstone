@@ -43,3 +43,16 @@ R Object: `corpus.RData`
 
 ## 4. Term(s) Frequency Table
 * A Term Frequency Table is a data frame of 2 columns, the first column list the unique terms found in N-Grams and the second column list the number of occurrence of the unique terms.
+* R Object(s): `oneGramDataFrame.RData`, `biGramDataFrame.RData`, `triGramDataFrame.RData`
+* As example,
+	<table>
+	<tr><td><b>Term</b></td><td><b>Count</b></td></th>
+	<tr><td>hello world</td><td>6</td></tr>
+	<tr><td>i am</td><td>5</td></tr>
+	<tr><td>he is</td><td></td></tr>
+	</table>
+### Reduce Frequency Table
+* Although cleaning has been perform since the beginning of the routine. However the memory footprint required is still huge to be consumed as an application
+* One strategy is to inspect the Frequency Tables with the R `summary` command and subset the Tables if `Count` is equal or larger than the mean 
+
+## 5. Transition Matrix
