@@ -94,6 +94,12 @@ sortDataFrame <- function(df) {
   df[order(df$Count, decreasing = TRUE), ]
 }
 
+load("oneGramParsed.RData")
+oneGramDataFrame <- data.frame(table(oneGramParsed))
+oneGramDataFrame <- sortDataFrame(sanitizeDataFrame(oneGramDataFrame))
+save(oneGramDataFrame, file = "oneGramDataFrame.RData")
+rm(oneGramParsed); rm(oneGramDataFrame); gc();
+
 load("biGramParsed.RData")
 biGramDataFrame <- data.frame(table(biGramParsed))
 biGramDataFrame <- sortDataFrame(sanitizeDataFrame(biGramDataFrame))
