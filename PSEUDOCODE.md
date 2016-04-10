@@ -51,8 +51,14 @@ R Object: `corpus.RData`
 	<tr><td>i am</td><td>5</td></tr>
 	<tr><td>he is</td><td>4</td></tr>
 	</table>
-### Reduce Frequency Table
+### Enrich Term(s) Frequency Table
+* Break `Term` into `columnKeys` and `rowKeys` to be used to build Transition Matrix
+* `columnKeys` refers to the column key of the matrix (vertical)
+* `rowKeys` refers to the row key of the matrix (horizontal)
+* R Object(s): `biGramDataFrameEnriched.RData`, `triGramDataFrameEnriched.RData`
+
+### Reduce Term(s) Frequency Table
 * Although cleaning has been perform since the beginning of the routine. However the memory footprint required is still huge to be consumed as an application
 * One strategy is to inspect the Frequency Tables with the R `summary` command and subset the Tables if `Count` is equal or larger than the mean 
 
-## 5. Transition Matrix
+## 5. Transition Matrix 
