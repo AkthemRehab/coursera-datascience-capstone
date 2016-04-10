@@ -62,3 +62,11 @@ R Object: `corpus.RData`
 * One strategy is to inspect the Frequency Tables with the R `summary` command and subset the Tables if `Count` is equal or larger than the mean 
 
 ## 5. Transition Matrix 
+* A Transition Matrix can be depicted as a State Transition Table; each row and column represents a state; to interpret the matrix, a state indicated by row can transit to a state indicated by column complying to a given probability indicated by the intersection.
+* As example, 
+	<table>
+	<tr><td></td><td>a</td><td>b</td></tr>
+	<tr><td>a</td><td>0.5</td><td>0.5</td></tr>
+	<tr><td>b</td><td>0.5</td><td>0.5</td></tr>
+	</table>
+	* state "a" has 50% chances of transit to state "a" or "b"

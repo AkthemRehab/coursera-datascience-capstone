@@ -34,6 +34,9 @@ rm(triGramDataFrame); rm(triGramDataFrameEnriched); gc()
 # ------------------------------------------------------------------------------
 # PART 0.1: Further reduce enriched N-Grams
 # ------------------------------------------------------------------------------
+load("oneGramDataFrame.RData")
+summary(subset(oneGramDataFrame, Count >= 13.00))
+
 load("biGramDataFrameEnriched.RData")
 summary(subset(biGramDataFrameEnriched, Count >= 8.46))
 
@@ -43,27 +46,28 @@ summary(subset(triGramDataFrameEnriched, Count >= 3.75))
 # ------------------------------------------------------------------------------
 # PART 1: Make Transition Matrix with Count
 # ------------------------------------------------------------------------------
-makeTransitionMatrixCount <- function(enrichedNgramDataFrame) {
-  matrix(data = ???, 
-         nrow = ???, 
-         ncol = ???,
-         dimnames = list(???, ???))
+makeTransitionMatrixCount <- function(dimensionNames, referenceDataFrame) {
+  len <- length(dimensionNames)
+  transitionMatrix <- 
+    matrix(data = rep(0, len),
+         nrow = len, ncol = len,
+         dimnames = list(dimensionNames, dimensionNames))
+  
+  for (i in 1: nrow(referenceDataFrame)) {
+    row <- referenceDataFrame[i, ]
+    if (row$rowKeys %in% dimensionNames && row$columnKeys %in% dimensionNames)
+      transitionMatrix[row$rowKeys, row$columnKeys] <- row$Count
+  }
+  transitionMatrix
 }
 
+load("oneGramDataFrame.RData")
 load("biGramDataFrameEnriched.RData")
-biGramTransitionMatrixCount <- 
-  makeTransitionMatrixCount(subset(biGramDataFrameEnriched, Count >= 8.46))
-save(biGramTransitionMatrixCount, file = "biGramTransitionMatrixCount.RData")
-rm(biGramDataFrameEnriched); rm(biGramTransitionMatrixCount); gc()
-
-load("triGramDataFrameEnriched.RData")
-triGramTransitionMatrixCount <- 
-  makeTransitionMatrixCount(subset(triGramDataFrameEnriched, Count >= 3.75))
-save(triGramTransitionMatrixCount, file = "triGramTransitionMatrixCount.RData")
-rm(triGramDataFrameEnriched); rm(triGramTransitionMatrixCount); gc()
-
+transitionMatrix <- makeTransitionMatrixCount(
+  subset(oneGramDataFrame, Count >= 13.00)$Term, biGramDataFrameEnriched)
+save(transitionMatrix, file = "transitionMatrix.RData")
+rm(oneGramDataFrame); rm(biGramDataFrameEnriched); rm(transitionMatrix);
 # ------------------------------------------------------------------------------
 # PART 2: Make Transition Matrix with Probability
 # ------------------------------------------------------------------------------
-load("biGramTransitionMatrixCount.RData")
 
