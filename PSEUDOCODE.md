@@ -70,3 +70,5 @@ R Object: `corpus.RData`
 	<tr><td>b</td><td>0.5</td><td>0.5</td></tr>
 	</table>
 	* state "a" has 50% chances of transit to state "a" or "b"
+### Smoothing
+* **Add 1 Smoothing** as candidate
