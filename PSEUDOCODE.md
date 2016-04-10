@@ -49,7 +49,7 @@ R Object: `corpus.RData`
 	<tr><td><b>Term</b></td><td><b>Count</b></td></th>
 	<tr><td>hello world</td><td>6</td></tr>
 	<tr><td>i am</td><td>5</td></tr>
-	<tr><td>he is</td><td></td></tr>
+	<tr><td>he is</td><td>4</td></tr>
 	</table>
 ### Reduce Frequency Table
 * Although cleaning has been perform since the beginning of the routine. However the memory footprint required is still huge to be consumed as an application
