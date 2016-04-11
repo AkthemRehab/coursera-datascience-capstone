@@ -69,8 +69,7 @@ save(transitionMatrix, file = "transitionMatrix.RData")
 rm(oneGramDataFrame); rm(biGramDataFrameEnriched); rm(transitionMatrix);
 
 # ------------------------------------------------------------------------------
-# PART 2: Make Transition Matrix with Probability
-# 1. Use +1 smoothing
+# PART 2: Make Transition Matrix with Add-1 Smoothing
 # ------------------------------------------------------------------------------
 load("transitionMatrix.RData")
 dimNames <- dimnames(transitionMatrix)
@@ -83,4 +82,8 @@ for (rowName in rowNames) {
   }
 }
 
+transitionMatrixAddOneSmoothing <- transitionMatrix
+save(transitionMatrixAddOneSmoothing, file = "transitionMatrixAddOneSmoothing.RData")
+rm(rowNames); rm(colNames); rm(transitionMatrix); rm(transitionMatrixAddOneSmoothing)
+rm(colName); rm(rowName); gc()
 
