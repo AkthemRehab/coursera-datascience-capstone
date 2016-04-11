@@ -6,8 +6,6 @@ load("./dormantroot/transitionMatrix.RData")
 isValid <- function(input) {
   if (length(input) == 0) FALSE
   else if (length(input) == 1 && input[1] == "") FALSE
-  else if (length(input[grep("\\d", input, perl = TRUE)])) FALSE
-  else if (length(input[grep("\\W", input, perl = TRUE)])) FALSE
   else if (length(input) == 1 && input[1] != "") TRUE
   else FALSE
     
@@ -15,19 +13,21 @@ isValid <- function(input) {
 
 model <- new("markovchain", transitionMatrix = transitionMatrix)
 
-predictionModelHandler <- function(model, input, numToPredict) {
-  
+predictionModelHandler <- function(input, numToPredict) {
+  redictedWords <- predictFollowingWord(model, preprocessInputText(input), numToPredict)
+  redictedWords <- colnames(t(as.matrix(predictedWords$conditionalProbabilities)))
+  return(paste(redictedWords, collapse = ", "))
 }
 
-predictionModel <- function(input) {
-  if (isValid(input)) return(paste(input, ", ", input, ", ", input, sep = ""))
+predictionModel <- function(input, numToPredict) {
+  if (isValid(input)) return(predictionModelHandler(input, numToPredict))
   else return("<Please use a valid input>")
 }
 
 shinyServer(
   function(input, output) {    
     reactiveInputHandler <- reactive({
-        predictionModel(input$inputText)
+        predictionModel(input$inputText, input$numToPredict)
     })
     
     reactiveInputHandler2 <- reactive({

@@ -6,7 +6,7 @@ shinyUI(
     
     sidebarPanel(
       textInput("inputText", h5("Text input")),
-      numericInput("n", h5("Numbers of words to predict"), value = 3, min = 2, max = 5),
+      numericInput("numToPredict", h5("Numbers of words to predict"), value = 3, min = 2, max = 5),
       # radioButtons("numToPredict", h5("Smoothing selection"),
       #             choices = list("Simple back-off" = 1, "Your algo " = 2),
       #              selected = 1),

@@ -3,7 +3,8 @@ library(markovchain)
 
 source("week3-constructCorpus.R")
 
-predictFollowingWord <- function(model, input, numberOfOutcome = 10) {
+predictFollowingWord <- function(model, input, numberOfOutcome) {
+  print(cat("numberOfOutcome", numberOfOutcome))
   inputString <- input
   inputStringParts <- strsplit(inputString, " ")[[1]]
   inputStringLength <- length(inputStringParts)
@@ -18,18 +19,18 @@ predictFollowingWord <- function(model, input, numberOfOutcome = 10) {
   cache$stateHistory <- c()
   
   currentState <- inputStringParts[1]
-  print(paste("first word:", currentState))
+  # print(paste("first word:", currentState))
   if (!currentState %in% dictionary) 
     currentState <- getRandomWord(inputStringLength, dictionary)
   
-  print(paste("check dictionary:", currentState))
+  # print(paste("check dictionary:", currentState))
   cache$stateHistory  <- c(cache$stateHistory, currentState)
   
   remainingInputStringParts <- inputStringParts[2:inputStringLength]
   
   for (remainingInputString in remainingInputStringParts) {
     nextState <- remainingInputString
-    print(paste("next word:", nextState))
+    # print(paste("next word:", nextState))
     if (!nextState %in% dictionary) {
       nextPossibilities <- conditionalDistribution(markovChainModel, currentState)
       nextStates <- dictionary[which.max(nextPossibilities)]
@@ -62,6 +63,6 @@ test <- function() {
   load("./dormantroot/transitionMatrix.RData"); format(object.size(transitionMatrix), units = "MB") # [1] "13.5 Mb"
   markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
   # save(markovChainModel, file = "markovChainModel")
-  predictedWords <- predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"))
+  predictedWords <- predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"), 4)
   colnames(t(as.matrix(predictedWords$conditionalProbabilities)))
 }
