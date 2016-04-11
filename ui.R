@@ -22,9 +22,10 @@ shinyUI(
           p("The model used for this text prediction is the Markov Chain modelling. Which each word is modeled as state with some probability of moving into another starte."),
           h4("Application Instruction"),
           p("1. Type some text into the text box under the \"Text input\" heading"),
-          p("2. Select the number of words to be predicted. default is 3, minimum is 2 and maximum is 5."),
-          p("3. Click submit button once inputs are statisfied."),
-          p("4. Navigate to Output Panel to view results by clickingon the \"Output\" tab.")),
+          p("2. \"Text input\" values are restricted to only alphabetical words."),
+          p("3. Select the number of words to be predicted. default is 3, minimum is 2 and maximum is 5."),
+          p("4. Click submit button once inputs are statisfied."),
+          p("5. Navigate to Output Panel to view results by clickingon the \"Output\" tab.")),
         
         tabPanel(h4("Output"),
           h4("You have entered,"),

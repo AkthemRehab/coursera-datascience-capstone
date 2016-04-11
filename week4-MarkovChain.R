@@ -1,10 +1,7 @@
 library(tm)
 library(markovchain)
 
-load("./transitionMatrix.RData"); # format(object.size(transitionMatrix), units = "MB") # [1] "280.5 Mb"
-load("./dormantroot/transitionMatrix.RData"); format(object.size(transitionMatrix), units = "MB") # [1] "13.5 Mb"
-markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
-# save(markovChainModel, file = "markovChainModel")
+source("week3-constructCorpus.R")
 
 predictFollowingWord <- function(model, input, numberOfOutcome = 10) {
   inputString <- input
@@ -56,14 +53,15 @@ predictFollowingWord <- function(model, input, numberOfOutcome = 10) {
 
 preprocessInputText <- function(inputText) {
   corpus <- Corpus(VectorSource(inputText))
-  corpus <- tm_map(corpus, tolower)
-  corpus <- tm_map(corpus, removePunctuation)
-  corpus <- tm_map(corpus, removeNumbers)
-  # corpus <- tm_map(corpus, removeWords, stopwords("english"))
-  corpus <- tm_map(corpus, stemDocument) # E.g. running and run may have different linguistic context
-  corpus <- tm_map(corpus, stripWhitespace)
-  corpus <- tm_map(corpus, PlainTextDocument)
+  corpus <- transformCorpus(corpus)
   return(as.character(corpus[[1]]))
 }
 
-predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"))
+test <- function() {
+  # load("./transitionMatrix.RData"); # format(object.size(transitionMatrix), units = "MB") # [1] "280.5 Mb"
+  load("./dormantroot/transitionMatrix.RData"); format(object.size(transitionMatrix), units = "MB") # [1] "13.5 Mb"
+  markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
+  # save(markovChainModel, file = "markovChainModel")
+  predictedWords <- predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"))
+  colnames(t(as.matrix(predictedWords$conditionalProbabilities)))
+}

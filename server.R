@@ -1,11 +1,22 @@
 library(shiny)
 
+source("week4-MarkovChain.R")
+load("./dormantroot/transitionMatrix.RData")
+
 isValid <- function(input) {
   if (length(input) == 0) FALSE
   else if (length(input) == 1 && input[1] == "") FALSE
+  else if (length(input[grep("\\d", input, perl = TRUE)])) FALSE
+  else if (length(input[grep("\\W", input, perl = TRUE)])) FALSE
   else if (length(input) == 1 && input[1] != "") TRUE
   else FALSE
     
+}
+
+model <- new("markovchain", transitionMatrix = transitionMatrix)
+
+predictionModelHandler <- function(model, input, numToPredict) {
+  
 }
 
 predictionModel <- function(input) {
