@@ -5,11 +5,11 @@ shinyUI(
     titlePanel("Text Prediction Application"),
     
     sidebarPanel(
-      textInput("entry", h5("Text input"), ""),
+      textInput("inputText", h5("Text input")),
       numericInput("n", h5("Numbers of words to predict"), value = 3, min = 2, max = 5),
-      radioButtons("radio", h5("Smoothing selection"),
-                   choices = list("Simple back-off" = 1, "Your algo " = 2),
-                    selected = 1),
+      # radioButtons("numToPredict", h5("Smoothing selection"),
+      #             choices = list("Simple back-off" = 1, "Your algo " = 2),
+      #              selected = 1),
       submitButton("SUBMIT"),
                     br()),
     mainPanel(
@@ -23,14 +23,15 @@ shinyUI(
           h4("Application Instruction"),
           p("1. Type some text into the text box under the \"Text input\" heading"),
           p("2. Select the number of words to be predicted. default is 3, minimum is 2 and maximum is 5."),
-          p("3. Click submit button once inputs are statisfied.")),
+          p("3. Click submit button once inputs are statisfied."),
+          p("4. Navigate to Output Panel to view results by clickingon the \"Output\" tab.")),
         
         tabPanel(h4("Output"),
           h4("You have entered,"),
-          span(h4(), style="font-weight: bold"),
+          span(h4(textOutput("inputText")), style="font-weight: bold; color: #4582ec"),
           br(),
           h4("The predicted words are as follow,"),
-          span(h4(), style="font-weight: bold")
+          span(h4(textOutput("predictedWords")), style="font-weight: bold; color: #4582ec")
           ))
   ))
 )
