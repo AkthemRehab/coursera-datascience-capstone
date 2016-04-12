@@ -31,7 +31,7 @@ predictFollowingWord <- function(model, input, numberOfOutcome) {
     nextState <- remainingInputString
     # print(paste("next word:", nextState))
     if (!nextState %in% dictionary) {
-      nextPossibilities <- conditionalDistribution(markovChainModel, currentState)
+      nextPossibilities <- conditionalDistribution(model, currentState)
       nextStates <- dictionary[which.max(nextPossibilities)]
       if (length(nextStates) > 0) 
         nextState <- nextStates[getRandomIndex(length(nextStates))]
@@ -45,7 +45,7 @@ predictFollowingWord <- function(model, input, numberOfOutcome) {
   }
   
   cache$conditionalProbabilities <- 
-    sort(conditionalDistribution(markovChainModel, currentState),
+    sort(conditionalDistribution(model, currentState),
          decreasing = TRUE)[1:numberOfOutcome]
   
   cache
@@ -58,8 +58,7 @@ preprocessInputText <- function(inputText) {
 }
 
 test <- function() {
-  # load("./transitionMatrix.RData"); # format(object.size(transitionMatrix), units = "MB") # [1] "280.5 Mb"
-  load("./dormantroot/transitionMatrix.RData"); format(object.size(transitionMatrix), units = "MB") # [1] "13.5 Mb"
+  load("./dormantroot/transitionMatrix.RData");
   markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
   # save(markovChainModel, file = "markovChainModel")
   predictedWords <- predictFollowingWord(markovChainModel, preprocessInputText("jokingly wished the two could"), 4)
