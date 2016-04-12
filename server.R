@@ -2,40 +2,40 @@ library(shiny)
 
 source("week4-MarkovChain.R")
 load("./dormantroot/transitionMatrix.RData")
+markovModel <- new("markovchain", transitionMatrix = transitionMatrix)
 
 isValid <- function(input) {
   if (length(input) == 0) FALSE
+  else if (length(input[grep("^\\W+$", input, perl = TRUE)])) FALSE
+  else if (length(input[grep("^\\d+$", input, perl = TRUE)])) FALSE
   else if (length(input) == 1 && input[1] == "") FALSE
   else if (length(input) == 1 && input[1] != "") TRUE
   else FALSE
-    
 }
-
-model <- new("markovchain", transitionMatrix = transitionMatrix)
 
 predictionModelHandler <- function(input, numToPredict) {
-  redictedWords <- predictFollowingWord(model, preprocessInputText(input), numToPredict)
-  redictedWords <- colnames(t(as.matrix(predictedWords$conditionalProbabilities)))
-  return(paste(redictedWords, collapse = ", "))
-}
-
-predictionModel <- function(input, numToPredict) {
-  if (isValid(input)) return(predictionModelHandler(input, numToPredict))
-  else return("<Please use a valid input>")
+  if (isValid(input)) {
+    print(paste(input, " [", numToPredict, "]", collapse = ""))
+    predictedWords <- predictFollowingWord(markovModel, input, numToPredict)
+    predictedWordsMatrix <- t(as.matrix(predictedWords$conditionalProbabilities))
+    return(paste(colnames(predictedWordsMatrix), collapse = ", "))
+  } else {
+    return("<Please use a valid input>")
+  }
 }
 
 shinyServer(
   function(input, output) {    
-    reactiveInputHandler <- reactive({
-        predictionModel(input$inputText, input$numToPredict)
-    })
-    
-    reactiveInputHandler2 <- reactive({
+    reactiveInputHandler1 <- reactive({
       if (isValid(input$inputText)) return(paste("\"", input$inputText , "\"", sep = ""))
       else return("<Please use a valid input>")
     })
     
-    output$inputText <- renderText(reactiveInputHandler2())
+    output$inputText <- renderText(reactiveInputHandler1())
     
-    output$predictedWords <- renderText(reactiveInputHandler())
+    reactiveInputHandler2 <- reactive({
+      predictionModelHandler(input$inputText, input$numToPredict)
+    })
+    
+    output$predictedWords <- renderText(reactiveInputHandler2())
   })

@@ -4,7 +4,6 @@ library(markovchain)
 source("week3-constructCorpus.R")
 
 predictFollowingWord <- function(model, input, numberOfOutcome) {
-  print(cat("numberOfOutcome", numberOfOutcome))
   inputString <- input
   inputStringParts <- strsplit(inputString, " ")[[1]]
   inputStringLength <- length(inputStringParts)
