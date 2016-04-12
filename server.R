@@ -1,8 +1,14 @@
 library(shiny)
 
 source("week4-MarkovChain.R")
-load("./dormantroot/transitionMatrix.RData")
-markovModel <- new("markovchain", transitionMatrix = transitionMatrix)
+
+# load("./markovChainModel.RData")
+# markovModel <- markovChainModel
+# rm(markovChainModel)
+
+load("./markovChainModelReference.RData")
+markovModel <- markovChainModelReference
+rm(markovChainModelReference)
 
 isValid <- function(input) {
   if (length(input) == 0) FALSE
