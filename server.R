@@ -2,13 +2,13 @@ library(shiny)
 
 source("week4-MarkovChain.R")
 
-# load("./markovChainModel.RData")
-# markovModel <- markovChainModel
-# rm(markovChainModel)
+load("./markovChainModel.RData")
+markovModel <- markovChainModel
+rm(markovChainModel)
 
-load("./markovChainModelReference.RData")
-markovModel <- markovChainModelReference
-rm(markovChainModelReference)
+# load("./markovChainModelReference.RData")
+# markovModel <- markovChainModelReference
+# rm(markovChainModelReference)
 
 isValid <- function(input) {
   if (length(input) == 0) FALSE
