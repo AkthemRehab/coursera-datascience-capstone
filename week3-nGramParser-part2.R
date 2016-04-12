@@ -81,9 +81,30 @@ for (rowName in rowNames) {
     transitionMatrix[rowName, colName] <- transitionMatrix[rowName, colName] + 1
   }
 }
+rm(colName); rm(rowName); 
 
 transitionMatrixAddOneSmoothing <- transitionMatrix
 save(transitionMatrixAddOneSmoothing, file = "transitionMatrixAddOneSmoothing.RData")
 rm(rowNames); rm(colNames); rm(transitionMatrix); rm(transitionMatrixAddOneSmoothing)
-rm(colName); rm(rowName); gc()
+gc()
 
+# ------------------------------------------------------------------------------
+# PART 3: Compute probability for Transition Matrix
+# ------------------------------------------------------------------------------
+load("transitionMatrixAddOneSmoothing.RData")
+dimNames <- dimnames(transitionMatrixAddOneSmoothing)
+rowNames <- dimNames[[1]]; colNames <- dimNames[[2]]
+rm(dimNames)
+
+for (rowName in rowNames) {
+  sumOfRow <- sum(transitionMatrixAddOneSmoothing[rowName, ])
+  for (colName in colNames) {
+    transitionMatrixAddOneSmoothing[rowName, colName] <-
+      transitionMatrixAddOneSmoothing[rowName, colName] / sumOfRow
+  }
+}
+rm(sumOfRow); rm(rowNames); rm(colNames);
+rm(rowName); rm(colName);
+transitionMatrixProbability <- transitionMatrixAddOneSmoothing
+save(transitionMatrixProbability, file = "transitionMatrixProbability.RData")
+rm(transitionMatrixAddOneSmoothing); rm(transitionMatrixProbability); gc()
