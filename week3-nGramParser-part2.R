@@ -115,9 +115,13 @@ rm(transitionMatrixAddOneSmoothing); rm(transitionMatrixProbability); gc()
 load("transitionMatrixProbability.RData")
 dimNames <- dimnames(transitionMatrixProbability)
 rowNames <- dimNames[[1]]; colNames <- dimNames[[2]]
+rm(dimNames)
 
 for (rowName in rowNames) {
   sumOfRow <- sum(transitionMatrixProbability[rowName, ])
   if (all.equal(sumOfRow, 1))
     warning(paste("Row [", rowName, "] does not equal to 1. [", sumOfRow, "]"))
 }
+rm(sumOfRow); rm(rowName);
+rm(transitionMatrixProbability); rm(rowNames); rm(colNames)
+gc();
