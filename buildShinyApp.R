@@ -21,6 +21,7 @@ buildShinyApp <- function(deploy = FALSE) {
     resource("server", "server.R"),
     resource("markovChainModel", "markovChainModelReference.RData"),
     resource("functions", "week4-MarkovChain.R"),
+    resource("functions1", "week3-constructCorpus.R"),
     resource("www/bootstrap.css", "www/bootstrap.css"),
     resource("www/image/background2.jpg", "www/image/background2.jpg"))
   

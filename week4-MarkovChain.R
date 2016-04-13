@@ -1,7 +1,5 @@
-library(tm)
-library(markovchain)
-
-source("week3-constructCorpus.R")
+source("./week3-constructCorpus.R")
+library("markovchain")
 
 predictFollowingWord <- function(model, input, numberOfOutcome) {
   inputString <- input
@@ -58,6 +56,7 @@ preprocessInputText <- function(inputText) {
 }
 
 test <- function() {
+  library(markovchain)
   load("./dormantroot/transitionMatrix.RData");
   markovChainModel <- new("markovchain", transitionMatrix = transitionMatrix)
   # save(markovChainModel, file = "markovChainModel")
