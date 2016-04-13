@@ -1,14 +1,14 @@
 library(shiny)
 
-source("week4-MarkovChain.R")
+source("./week4-MarkovChain.R")
 
-load("./markovChainModel.RData")
-markovModel <- markovChainModel
-rm(markovChainModel)
+# load("./markovChainModel.RData")
+# markovModel <- markovChainModel
+# rm(markovChainModel)
 
-# load("./markovChainModelReference.RData")
-# markovModel <- markovChainModelReference
-# rm(markovChainModelReference)
+load("./markovChainModelReference.RData")
+markovModel <- markovChainModelReference
+rm(markovChainModelReference)
 
 isValid <- function(input) {
   if (length(input) == 0) FALSE
@@ -19,10 +19,10 @@ isValid <- function(input) {
   else FALSE
 }
 
-predictionModelHandler <- function(input, numToPredict) {
+predictionModelHandler <- function(model, input, numToPredict) {
   if (isValid(input)) {
     print(paste(input, " [", numToPredict, "]", collapse = ""))
-    predictedWords <- predictFollowingWord(markovModel, input, numToPredict)
+    predictedWords <- predictFollowingWord(model, input, numToPredict)
     predictedWordsMatrix <- t(as.matrix(predictedWords$conditionalProbabilities))
     return(paste(colnames(predictedWordsMatrix), collapse = ", "))
   } else {
@@ -32,6 +32,8 @@ predictionModelHandler <- function(input, numToPredict) {
 
 shinyServer(
   function(input, output) {    
+    print("Request received!")
+    
     reactiveInputHandler1 <- reactive({
       if (isValid(input$inputText)) return(paste("\"", input$inputText , "\"", sep = ""))
       else return("<Please use a valid input>")
@@ -40,7 +42,7 @@ shinyServer(
     output$inputText <- renderText(reactiveInputHandler1())
     
     reactiveInputHandler2 <- reactive({
-      predictionModelHandler(input$inputText, input$numToPredict)
+      predictionModelHandler(markovModel, input$inputText, input$numToPredict)
     })
     
     output$predictedWords <- renderText(reactiveInputHandler2())
