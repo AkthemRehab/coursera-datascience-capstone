@@ -1,7 +1,7 @@
 source("./week3-parallelProcessing.R")
 
 # Scoping issue
-makeNGrams <- function(ovid) {
+makeNGrams <- function(ovid, ngramsCount = c(1:3)) {
   setJvmOption <- function() {
     options(java.parameters = "-Xmx8192m" )
   }
@@ -19,7 +19,7 @@ makeNGrams <- function(ovid) {
   
   print(paste("START TIME:", Sys.time()))
   
-  ngrams <- foreach(x = c(1:3),
+  ngrams <- foreach(x = ngramsCount,
                     .combine = list,
                     .multicombine = TRUE,
                     .export = "ovid") %dopar% 
