@@ -47,7 +47,7 @@ makeSampleFiles <- function(sampleSize = 0.01) {
           makeFqnOutputFilePath(locale, context), 
           makeReducedData(fullQualifiedFileName, sampleSize))
       } else {
-        stop("File not found!") 
+        stop(paste("File not found! [", fullQualifiedFileName, "]", sep ="")) 
       }
     }
   }
