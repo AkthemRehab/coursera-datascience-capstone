@@ -9,7 +9,8 @@ finalDirectory <- paste(swiftKeyDirectory, "final", sep = filePathSep)
 outputDirectory <- paste(swiftKeyDirectory, "output", sep = filePathSep) 
 localesAvail <- c("de_DE", "en_US", "fi_FI", "ru_RU")
 locales <- localesAvail[2]
-contexts <- c("blogs", "news", "twitter")
+supportedContexts <- c("blogs", "news", "twitter")
+contexts <- c(supportedContexts[2], supportedContexts[3])
 fileExt <- "txt"
 set.seed(55669)
 
@@ -25,7 +26,7 @@ save(ovid, file="corpus.RData"); rm(ovid)
 
 source("./week3-nGramMaker.R")
 load("corpus.RData")
-ngrams <- makeNGrams(ovid)
+ngrams <- makeNGrams(ovid, c(1:2))
 oneGram <- ngrams[[1]]; biGram <- ngrams[[2]]; triGram <- ngrams[[3]];
 # fourGram <- ngrams[[4]]; fiveGram <- ngrams[[5]]
 rm(ngrams); gc()
