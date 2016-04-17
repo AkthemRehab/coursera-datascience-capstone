@@ -20,6 +20,7 @@ buildShinyApp <- function(deploy = FALSE) {
     resource("ui", "ui.R"),
     resource("server", "server.R"),
     resource("markovChainModel", "markovChainModelReference.RData"),
+    resource("profanity", "profanity.RData"),
     resource("functions", "week4-MarkovChain.R"),
     resource("functions1", "week3-constructCorpus.R"),
     resource("www/bootstrap.css", "www/bootstrap.css"),
@@ -43,9 +44,11 @@ if (deployToShinyIo == TRUE) {
   setwd(buildDirectory)
   
   library(rsconnect)
-  # rsconnect::setAccountInfo(name='yeongwei', token='22D56B3C9194780E36604090C5193B64', 
-  #                          secret='GaV6u3cn+czwxWtTokkb/HTN4rAnR60b/nqWVJy6')
+  rsconnect::setAccountInfo(name='yeongwei', token='22D56B3C9194780E36604090C5193B64', 
+                            secret='GaV6u3cn+czwxWtTokkb/HTN4rAnR60b/nqWVJy6')
+  deployApp(account="yeongwei")
   rsconnect::setAccountInfo(name='yeongwei116', token='C27A612098447A57639A934EFD01F74D', 
                             secret='iD566PLAtz3VeLX0TmuHHSmO81/hg1I2xLel4Mfo')
   deployApp(account="yeongwei116")
+  
 }
