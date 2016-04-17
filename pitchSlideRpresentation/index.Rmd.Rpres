@@ -1,0 +1,46 @@
+Text Prediction Application
+========================================================
+author: YeongWei
+date: April 17th, 2016
+transition: rotate
+
+Overview
+========================================================
+<b>Prediction today is about the future!</b>
+
+Applications derived from `word based statistical model` has helped to improve quality of life.
+
+As examples,
+
+1. `SwiftKey Keyboard` predicts the next word as user types that makes compostion task on mobile a breeze!
+
+2. `Text-To-Speech Synthesize` assists in speech construction when challenged by disability and breaks down physical communication boundaries. (E.g. Stephen Hawkin)
+
+How It Works ?
+========================================================
+The `High Level Architecture` as below,
+
+![High Level Architecture](images/high-level-architecture.png)
+
+`Markov Chain Model` represents each word as transitional state with probability. An intuitive example, word "B" has 30% chance to transit to word "A".
+
+`Add-1 Smoothing` is applied to distribute probability mass to produce fairer prediction model.
+
+Too Easy To Use !
+========================================================
+Type some text and hit the `SUBMIT` button! Results come back less than seconds!
+
+![User Interface](images/user-interface-2.png)
+![Performance Reading](images/performance-reading-1.png)
+
+What's Next ?
+========================================================
+The prediction model is somewhat skewed. Possible improvements are,
+
+1. Increase Corpus size and/or type.
+2. Increase machine resources - create more complex model.
+3. Increase Shiny io resources - host more complex text prediction application.
+
+So give this a try at [here](https://yeongwei116.shinyapps.io/data-science-capstone/)!
+
+For more detailed information about the implementation, click [here](https://github.com/yeongwei/coursera-datascience-capstone).
