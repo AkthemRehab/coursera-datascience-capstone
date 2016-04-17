@@ -27,7 +27,8 @@ save(ovid, file="corpus.RData"); rm(ovid)
 source("./week3-nGramMaker.R")
 load("corpus.RData")
 ngrams <- makeNGrams(ovid, c(1:2))
-oneGram <- ngrams[[1]]; biGram <- ngrams[[2]]; triGram <- ngrams[[3]];
+oneGram <- ngrams[[1]]; biGram <- ngrams[[2]]; 
+# triGram <- ngrams[[3]];
 # fourGram <- ngrams[[4]]; fiveGram <- ngrams[[5]]
 rm(ngrams); gc()
 save(oneGram, file = "oneGram.RData")
@@ -40,7 +41,8 @@ rm(oneGram); rm(biGram); rm(triGram);
 gc()
 
 source("./week3-nGramAnalysis.R")
-load("oneGram.RData"); load("biGram.RData"); load("triGram.RData"); 
+load("oneGram.RData"); load("biGram.RData"); 
+load("triGram.RData"); 
 load("fourGram.RData"); load("fiveGram.RData")
 oneGramDf <- sortGramDf(sanitizeGramDf(data.frame(table(oneGram))))
 biGramDf <- sortGramDf(sanitizeGramDf(data.frame(table(biGram))))
