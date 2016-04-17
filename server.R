@@ -22,7 +22,7 @@ isValid <- function(input) {
 predictionModelHandler <- function(model, input, numToPredict) {
   if (isValid(input)) {
     print(paste(input, " [", numToPredict, "]", collapse = ""))
-    predictedWords <- predictFollowingWord(model, input, numToPredict)
+    predictedWords <- predictFollowingWord(model, preprocessText(input), numToPredict)
     predictedWordsMatrix <- t(as.matrix(predictedWords$conditionalProbabilities))
     return(paste(colnames(predictedWordsMatrix), collapse = ", "))
   } else {
@@ -35,15 +35,22 @@ shinyServer(
     print("Request received!")
     
     reactiveInputHandler1 <- reactive({
-      if (isValid(input$inputText)) return(paste("\"", input$inputText , "\"", sep = ""))
+      if (isValid(input$inputText)) return(paste("\"", input$inputText, "\"", sep = ""))
       else return("<Please use a valid input>")
     })
     
     output$inputText <- renderText(reactiveInputHandler1())
     
     reactiveInputHandler2 <- reactive({
-      predictionModelHandler(markovModel, input$inputText, input$numToPredict)
+      if (isValid(input$inputText)) return(paste("\"", preprocessText(input$inputText), "\"", sep = ""))
+      else return("<Please use a valid input>")
     })
     
-    output$predictedWords <- renderText(reactiveInputHandler2())
+    output$preprocessedInputText <- renderText(reactiveInputHandler2())
+    
+    reactiveInputHandler3 <- reactive({
+      predictionModelHandler(markovModel, preprocessText(input$inputText), input$numToPredict)
+    })
+    
+    output$predictedWords <- renderText(reactiveInputHandler3())
   })

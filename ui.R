@@ -25,11 +25,17 @@ shinyUI(
           p("2. \"Text input\" values are restricted to only alphabetical words."),
           p("3. Select the number of words to be predicted. default is 3, minimum is 2 and maximum is 5."),
           p("4. Click submit button once inputs are statisfied."),
-          p("5. Navigate to Output Panel to view results by clickingon the \"Output\" tab.")),
+          p("5. Navigate to Output Panel to view results by clickingon the \"Output\" tab."),
+          h4("Input / Output"),
+          p("1. User may input any words, however it will be preprocessed before pushing into prediction executor"),
+          p("2. Under the \"Output\" tab; text box under heading \"You have entered,\" will show the text user has entered. Text box under heading \"Your preprocessed input,\" will show the text after preprocessed. Text box under heading \"The predicted words are as follow,\" will show the predicted words.")),
         
         tabPanel(h4("Output"),
           h4("You have entered,"),
           span(h4(textOutput("inputText")), style="font-weight: bold; color: #4582ec"),
+          br(),
+          h4("Your preprocessed input,"),
+          span(h4(textOutput("preprocessedInputText")), style="font-weight: bold; color: #4582ec"),
           br(),
           h4("The predicted words are as follow,"),
           span(h4(textOutput("predictedWords")), style="font-weight: bold; color: #4582ec")
