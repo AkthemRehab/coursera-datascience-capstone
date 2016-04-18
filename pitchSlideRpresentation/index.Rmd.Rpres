@@ -4,17 +4,17 @@ author: YeongWei
 date: April 17th, 2016
 transition: rotate
 
-Overview
+What Is This About ?!
 ========================================================
-<b>Prediction today is about the future!</b>
+<b>It's tough to predict the future but not words!</b>
 
-Applications derived from `word based statistical model` has helped to improve quality of life.
+Applications derived from `word based statistical model` has helped improve mankind's quality of life.
 
-As examples,
+For examples,
 
-1. [<b>SwiftKey Keyboard</b>](https://swiftkey.com/en) predicts the next word as user types that makes compostion task on mobile a breeze!
+1. [<b>SwiftKey Keyboard</b>](https://swiftkey.com/en) predicts the next word (as user types) that makes compostion task on mobile a breeze!
 
-2. [<b>Text-To-Speech Synthesize</b>](https://en.wikipedia.org/wiki/Speech_synthesis) assists in speech construction when challenged by disability and breaks down physical communication boundaries. (E.g. Stephen Hawkin)
+2. [<b>Text-To-Speech Synthesize</b>](https://en.wikipedia.org/wiki/Speech_synthesis) assists in speech construction when challenged by disability and breaks down physical communication boundaries. (E.g. Stephen Hawking)
 
 How It Works ?
 ========================================================
@@ -24,9 +24,9 @@ The `High Level Architecture` as below,
 
 `Markov Chain Model` represents each word as transitional state with probability. An intuitive example, word "B" has 30% chance to transit to word "A".
 
-`Add-1 Smoothing` is applied to distribute probability mass to produce fairer prediction model.
+`Add-1 Smoothing` is applied to distribute probability mass to produce a less-biased prediction model.
 
-Too Easy To Use !
+Too Easy !
 ========================================================
 Type some text and hit the `SUBMIT` button! Results come back less than seconds!
 
@@ -41,6 +41,6 @@ The prediction model is somewhat skewed. Possible improvements are,
 2. Increase machine resources - create more complex model.
 3. Increase Shiny io resources - host more complex text prediction application.
 
-So give this a try at [here](https://yeongwei116.shinyapps.io/data-science-capstone/)!
+What are you waiting for ? Give it a try [here](https://yeongwei116.shinyapps.io/data-science-capstone/)!
 
 For more detailed information about the implementation, click [here](https://github.com/yeongwei/coursera-datascience-capstone).
