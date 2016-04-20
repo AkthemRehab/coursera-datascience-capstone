@@ -36,7 +36,8 @@ save(biGram, file = "biGram.RData")
 save(triGram, file = "triGram.RData")
 # save(fourGram, file = "fourGram.RData")
 # save(fiveGram, file = "fiveGram.RData")
-rm(oneGram); rm(biGram); rm(triGram); 
+rm(oneGram); rm(biGram); 
+rm(triGram); 
 # rm(fourGram); rm(fiveGram); 
 gc()
 
