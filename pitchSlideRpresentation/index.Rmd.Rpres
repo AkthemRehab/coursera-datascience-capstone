@@ -41,6 +41,6 @@ The prediction model is somewhat skewed. Possible improvements are,
 2. Increase machine resources - create more complex model.
 3. Increase Shiny io resources - host more complex text prediction application.
 
-What are you waiting for ? Give it a try [here](https://yeongwei116.shinyapps.io/data-science-capstone/)!
+What are you waiting for ? Give it a try [here](https://yeongwei116.shinyapps.io/data-science-capstone/) or [here](https://yeongwei.shinyapps.io/data-science-capstone/)!
 
 For more detailed information about the implementation, click [here](https://github.com/yeongwei/coursera-datascience-capstone).
