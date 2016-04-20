@@ -37,49 +37,15 @@ rm(triGram); rm(triGramCleaned); gc();
 
 gc()
 
-# ------------------------------------------------------------------------------
-# Replace term of count 1 with <UNK>
-# ------------------------------------------------------------------------------
-load("oneGramFreqOne.RData")
-UNK <- "<UNK>"
-
-Sys.time()
-
 load("oneGramCleaned.RData")
-oneGramParsed <- unlist(
-  lapply(oneGramCleaned, function(term) {
-    ifelse(term %in% oneGramFreqOne, UNK, term)
-  }))
+oneGramParsed <- oneGramCleaned
 save(oneGramParsed, file = "oneGramParsed.RData")
-rm(oneGramCleaned); rm(oneGramParsed); gc()
+rm(oneGramCleaned); rm(oneGramParsed)
 
 load("biGramCleaned.RData")
-biGramParsed <- unlist(
-  lapply(biGramCleaned, function(terms){
-    termParts <- strsplit(terms, " ")[[1]]
-    paste(
-      ifelse(termParts[1] %in% oneGramFreqOne, UNK, termParts[1]),
-      ifelse(termParts[2] %in% oneGramFreqOne, UNK, termParts[2]),
-      sep = " ")
-  }))
+biGramParsed <- biGramCleaned
 save(biGramParsed, file = "biGramParsed.RData")
-rm(biGramCleaned); rm(biGramParsed); gc()
-
-load("triGramCleaned.RData")
-triGramParsed <- unlist(
-  lapply(triGramCleaned, function(terms){
-    termParts <- strsplit(terms, " ")[[1]]
-    paste(
-      ifelse(termParts[1] %in% oneGramFreqOne, UNK, termParts[1]),
-      ifelse(termParts[2] %in% oneGramFreqOne, UNK, termParts[2]),
-      ifelse(termParts[3] %in% oneGramFreqOne, UNK, termParts[3]),
-      sep = " ")
-  }))
-save(triGramParsed, file = "triGramParsed.RData")
-rm(triGramCleaned); rm(triGramParsed); gc()
-
-Sys.time()
-rm(UNK)
+rm(biGramCleaned); rm(biGramParsed)
 
 # ------------------------------------------------------------------------------
 # Make Term Count Data Frame
@@ -111,3 +77,12 @@ triGramDataFrame <- data.frame(table(triGramParsed))
 triGramDataFrame <- sortDataFrame(sanitizeDataFrame(triGramDataFrame))
 save(triGramDataFrame, file = "triGramDataFrame.RData")
 rm(triGramParsed); rm(triGramDataFrame); gc();
+
+# ------------------------------------------------------------------------------
+# Analyze Term Count DataFrame
+# ------------------------------------------------------------------------------
+source("./week3-nGramAnalysis.R")
+load("biGramDataFrame.RData")
+reductionRows <- c(1: 30)
+biGramDfReduced <- biGramDataFrame[reductionRows, ]
+plotNgram(biGramDfReduced, "Top 30 2-Grams", "2-Grams", "Count of 2-Grams")
