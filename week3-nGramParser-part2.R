@@ -35,7 +35,7 @@ rm(triGramDataFrame); rm(triGramDataFrameEnriched); gc()
 # PART 0.1: Further reduce enriched N-Grams
 # ------------------------------------------------------------------------------
 load("oneGramDataFrame.RData")
-summary(subset(oneGramDataFrame, Count >= 13.00))
+summary(subset(oneGramDataFrame, Count > 12 & Count < 128334))
 
 load("biGramDataFrameEnriched.RData")
 summary(subset(biGramDataFrameEnriched, Count >= 8.46))
